@@ -3,7 +3,7 @@
 <eagle version="9.3.1">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="10" unitdist="mil" unit="mil" style="lines" multiple="1" display="no" altdistance="5" altunitdist="mil" altunit="mil"/>
@@ -157,7 +157,7 @@
 <layer number="255" name="routoute" color="7" fill="1" visible="no" active="yes"/>
 </layers>
 <board>
-<fusionsync huburn="a.cGVyc29uYWw6dWUyOGY1Yzgw" projecturn="a.cGVyc29uYWw6dWUyOGY1YzgwIzIwMTgwNTEzMTMxNzkwNTU2" f3durn="urn:adsk.wipprod:dm.lineage:a7nt_5iXRJiZoWeQBlhm0Q" pcbguid="1c8f0901-69ec-46ae-bfa1-651fadf01780" lastpulledtime="2019-10-06T21:20:18Z" lastsyncedchangeguid="4074ba77-2b43-b005-7066-8d9772045af3"/>
+<fusionsync huburn="a.cGVyc29uYWw6dWUyOGY1Yzgw" projecturn="a.cGVyc29uYWw6dWUyOGY1YzgwIzIwMTgwNTEzMTMxNzkwNTU2" f3durn="urn:adsk.wipprod:dm.lineage:a7nt_5iXRJiZoWeQBlhm0Q" pcbguid="1c8f0901-69ec-46ae-bfa1-651fadf01780" lastpulledtime="2019-10-06T21:20:18Z" lastsyncedchangeguid="383407f5-af97-aebf-e9d3-9932f6e30369"/>
 <plain>
 <hole x="12.5" y="12.5" drill="7"/>
 <circle x="12.5" y="12.5" radius="12.5" width="0.254" layer="20"/>
