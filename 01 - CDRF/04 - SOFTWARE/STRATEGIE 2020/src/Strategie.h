@@ -103,10 +103,14 @@ const int pinServoVentouseGauche = 23 ;// Pin Servo ventouse droite
 const int pinServoBrasDroit = 24 ;      // Pin Servo bras droit
 const int pinServoBrasGauche = 25 ;     // Pin Servo bras gauche
 
+const int pinServoDrapeau = 26;
+
 int pinBalise ;
 
 Bras brasDroit ;
 Bras brasGauche ;
+
+Servo servoDrapeau ;
 
 // Declaration des variables IHM
 bool tirette = false , detection = false , strategie = false , check = false , changeStrat = true , typeRobot = ROBOT_PRIMAIRE;
