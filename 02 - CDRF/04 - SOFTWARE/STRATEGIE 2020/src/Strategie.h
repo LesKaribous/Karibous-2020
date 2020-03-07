@@ -108,27 +108,6 @@ int pinBalise ;
 Bras brasDroit ;
 Bras brasGauche ;
 
-// Declaration des positions servo
-// Bras ventouse
-const int sgHaut    = 140 ;
-const int sgBas     = 50 ;
-
-const int sdHaut    = 50 ;
-const int sdBas     = 140 ;
-
-const int svgHaut    = 150 ;
-const int svgBas     = 70 ;
-
-const int svdHaut    = 20 ;
-const int svdBas     = 90 ;
-
-// Bras lateraux
-const int sgHaut_bras = 50;
-const int sgBas_bras  = 155;
-
-const int sdHaut_bras = 130;
-const int sdBas_bras  = 30;
-
 // Declaration des variables IHM
 bool tirette = false , detection = false , strategie = false , check = false , changeStrat = true , typeRobot = ROBOT_PRIMAIRE;
 

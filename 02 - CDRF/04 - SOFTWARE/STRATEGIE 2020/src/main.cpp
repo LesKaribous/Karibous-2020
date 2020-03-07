@@ -61,8 +61,8 @@ void initActionneur()
     brasDroit.setPin(pinServoDroit,pinServoVentouseDroit,pinPompeDroit,pinEVDroit);
     brasGauche.setPin(pinServoGauche,pinServoVentouseGauche,pinPompeGauche,pinEVGauche);
 
-    brasDroit.setLimit(50,150,20,90);
-    brasGauche.setLimit(140,50,150,70);
+    brasDroit.setLimit(45,150,10,90);
+    brasGauche.setLimit(140,45,160,70);
 
     brasDroit.setPosition(0,0,LOW,LOW,0);
     brasGauche.setPosition(0,0,LOW,LOW,2000);
@@ -72,25 +72,6 @@ void initActionneur()
 
     brasDroit.setPosition(0,0,LOW,LOW,0);
     brasGauche.setPosition(0,0,LOW,LOW,2000);
-
-
-    brasGauche.setPosition(50,0,LOW,LOW,1000);
-    brasGauche.setPosition(50,100,LOW,LOW,1000);
-    brasGauche.setPosition(100,100,HIGH,LOW,1000);
-    brasGauche.setPosition(50,100,HIGH,LOW,2000);
-    brasGauche.setPosition(50,100,LOW,HIGH,500);
-    brasGauche.setPosition(50,100,LOW,LOW,500);
-    brasGauche.setPosition(50,0,LOW,LOW,0);
-    brasGauche.setPosition(0,0,LOW,LOW,0);
-
-    brasDroit.setPosition(50,0,LOW,LOW,1000);
-    brasDroit.setPosition(50,100,LOW,LOW,1000);
-    brasDroit.setPosition(100,100,HIGH,LOW,1000);
-    brasDroit.setPosition(50,100,HIGH,LOW,2000);
-    brasDroit.setPosition(50,100,LOW,HIGH,500);
-    brasDroit.setPosition(50,100,LOW,LOW,500);
-    brasDroit.setPosition(50,0,LOW,LOW,0);
-    brasDroit.setPosition(0,0,LOW,LOW,0);
 
     // Specifique Robot primaire / secondaire
     if (typeRobot == ROBOT_PRIMAIRE)
@@ -134,6 +115,37 @@ void homologationPrimaire()
 
 void homologationSecondaire()
 {
+  turnGo(ADVERSAIRE_NON,false,true,0,180);
+  turnGo(ADVERSAIRE_NON,false,true,0,-50);
+
+  brasGauche.setPosition(50,0,LOW,LOW,0);
+  brasDroit.setPosition(50,0,LOW,LOW,300);
+
+  brasGauche.setPosition(100,100,HIGH,LOW,0);
+  brasDroit.setPosition(100,100,HIGH,LOW,300);
+
+  turnGo(ADVERSAIRE_NON,false,true,0,25);
+
+  brasGauche.setPosition(100,0,HIGH,LOW,0);
+  brasDroit.setPosition(100,0,HIGH,LOW,1000);
+
+  brasGauche.setPosition(50,0,HIGH,LOW,0);
+  brasDroit.setPosition(50,0,HIGH,LOW,1000);
+
+  turnGo(ADVERSAIRE_NON,false,true,0,-80);
+  turnGo(ADVERSAIRE_NON,false,true,90,500);
+
+  brasGauche.setPosition(100,0,HIGH,LOW,0);
+  brasDroit.setPosition(100,0,HIGH,LOW,300);
+
+  brasGauche.setPosition(100,100,LOW,HIGH,0);
+  brasDroit.setPosition(100,100,LOW,HIGH,1000);
+
+  turnGo(ADVERSAIRE_NON,false,true,0,-30);
+
+  brasGauche.setPosition(0,0,LOW,LOW,0);
+  brasDroit.setPosition(0,0,LOW,LOW,500);
+
   finMatch();
 }
 
@@ -198,7 +210,23 @@ void demoRotation()
 // Test nouvel actionneur
 void testActionneur()
 {
+  brasGauche.setPosition(50,0,LOW,LOW,1000);
+  brasGauche.setPosition(50,100,LOW,LOW,1000);
+  brasGauche.setPosition(100,100,HIGH,LOW,1000);
+  brasGauche.setPosition(50,100,HIGH,LOW,2000);
+  brasGauche.setPosition(50,100,LOW,HIGH,500);
+  brasGauche.setPosition(50,100,LOW,LOW,500);
+  brasGauche.setPosition(50,0,LOW,LOW,0);
+  brasGauche.setPosition(0,0,LOW,LOW,0);
 
+  brasDroit.setPosition(50,0,LOW,LOW,1000);
+  brasDroit.setPosition(50,100,LOW,LOW,1000);
+  brasDroit.setPosition(100,100,HIGH,LOW,1000);
+  brasDroit.setPosition(50,100,HIGH,LOW,2000);
+  brasDroit.setPosition(50,100,LOW,HIGH,500);
+  brasDroit.setPosition(50,100,LOW,LOW,500);
+  brasDroit.setPosition(50,0,LOW,LOW,0);
+  brasDroit.setPosition(0,0,LOW,LOW,0);
 }
 
 // Test nouvel actionneur
