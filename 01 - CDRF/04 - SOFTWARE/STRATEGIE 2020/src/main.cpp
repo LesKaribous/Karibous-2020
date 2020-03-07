@@ -81,7 +81,13 @@ void initActionneur()
     }
     else
     {
-
+      servoDrapeau.detach();
+      servoDrapeau.attach(pinServoDrapeau);
+      servoDrapeau.write(30);
+      delay(2000);
+      servoDrapeau.write(10);
+      delay(1000);
+      servoDrapeau.detach();
     }
 }
 
@@ -490,6 +496,11 @@ void finMatch()
 {
 	// Stopper les moteurs
 	sendNavigation(255, 0, 0);
+  servoDrapeau.detach();
+  servoDrapeau.attach(pinServoDrapeau);
+  servoDrapeau.write(30);
+  delay(500);
+  servoDrapeau.detach();
 	// Boucle infinie
 	while(1)
 	{

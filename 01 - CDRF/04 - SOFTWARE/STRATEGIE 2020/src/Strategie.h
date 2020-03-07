@@ -100,10 +100,9 @@ const int pinServoVentouseDroit = 21;// Pin Servo ventouse gauche
 const int pinServoGauche = 22 ;        // Pin Servo en bas à droite
 const int pinServoVentouseGauche = 23 ;// Pin Servo ventouse droite
 
-const int pinServoBrasDroit = 24 ;      // Pin Servo bras droit
-const int pinServoBrasGauche = 25 ;     // Pin Servo bras gauche
-
-const int pinServoDrapeau = 26;
+const int pinServoDrapeau = 8;
+//const int pinServoBrasDroit = 9 ;      // Pin Servo bras droit
+//const int pinServoBrasGauche = 10 ;     // Pin Servo bras gauche
 
 int pinBalise ;
 
