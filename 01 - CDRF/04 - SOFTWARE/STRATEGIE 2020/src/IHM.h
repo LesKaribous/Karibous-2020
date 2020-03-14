@@ -59,23 +59,23 @@ class IHM
       IHM();
       ~IHM();
 
-      void updateButtonIHM();
+      void updateButtonIHM  ();
       //------ Gestion des E/S ------
-      bool getTirette();
-      bool getDetection();
-      bool getStrategie();
-      bool getCheck();
-      bool getTypeRobot();
-      bool getEquipe();
+      bool getTirette       ();
+      bool getDetection     ();
+      bool getStrategie     ();
+      bool getCheck         ();
+      bool getTypeRobot     ();
+      bool getEquipe        ();
 
       //------ Pages LCD ------
-      void prepare();
-      void splashScreen();
-      void menuScreen();
-      void initScreen();
-      void checkListScreen();
-      void goScreen();
-      void matchScreen(int score,int tempsRestant,int nbrBadCRC);
+      void prepare          ();
+      void splashScreen     ();
+      void menuScreen       ();
+      void initScreen       ();
+      void checkListScreen  ();
+      void goScreen         ();
+      void matchScreen      (int score,int tempsRestant,int nbrBadCRC);
 
 
 
@@ -83,15 +83,19 @@ class IHM
     // Adversaire
     const bool _ADVERSAIRE_NON = 1 ;
     const bool _ADVERSAIRE_OUI = 0 ;
+
     // Couleur Equipe
     const bool _EQUIPE_JAUNE = 1 ;
     const bool _EQUIPE_VIOLET = 0 ;
+
     // Strategie
     const bool _STRATEGIE_HOMOLOGATION = 1 ;
     const bool _STRATEGIE_MATCH = 0 ;
+
     // type de Robot
     const bool _ROBOT_PRIMAIRE = 1 ;
     const bool _ROBOT_SECONDAIRE = 0 ;
+
     // Autres
     const int _TEMPS_MATCH = 101000 ;
 
@@ -102,6 +106,7 @@ class IHM
     const int _pinEquipe = A21;          // Pin choix d'équipe
     const int _pinCheck = A22;           // Pin bouton checklist
     const int _pinTypeRobot = 4;            // Pin jumper type de robot
+    
     // Logo Karibous
     const byte _LOGO_KARIBOUS_width = 128 ;
     const byte _LOGO_KARIBOUS_height = 33 ;
