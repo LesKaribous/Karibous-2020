@@ -1,9 +1,8 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include <FastCRC.h>
 #include <Servo.h>
 #include "Bras.h"
 #include "IHM.h"
+#include "ComNavigation.h"
 
 
 // Adressage I2C pour les cartes esclaves
@@ -30,15 +29,8 @@ const bool ROBOT_SECONDAIRE = 0 ;
 const int TEMPS_MATCH = 101000 ;
 
 // Declaration des pins E/S
-const int pinPompeGauche = 14 ;     // Pin de la pompe gauche
-const int pinEVGauche = 15 ;        // Pin de l'EV gauche
-const int pinPompeDroit = 16 ;      // Pin de la pompe droite
-const int pinEVDroit = 17 ;         // Pin de l'EV Droite
-
-const int pinServoDroit = 20 ;       // Pin Servo en bas à gauche
-const int pinServoVentouseDroit = 21;// Pin Servo ventouse gauche
-const int pinServoGauche = 22 ;        // Pin Servo en bas à droite
-const int pinServoVentouseGauche = 23 ;// Pin Servo ventouse droite
+const int pinPompeGauche=14,pinEVGauche=15,pinPompeDroit=16,pinEVDroit=17 ;
+const int pinServoDroit=20,pinServoVentouseDroit=21,pinServoGauche=22,pinServoVentouseGauche=23 ;
 
 const int pinServoDrapeau = 8;
 //const int pinServoBrasDroit = 9 ;      // Pin Servo bras droit
@@ -75,18 +67,23 @@ bool detection = false , strategie = false , typeRobot = ROBOT_PRIMAIRE , equipe
 //----- FONCTIONS OBLIGATOIRES -----
 void setup();
 void loop();
-
 //----- INITIALISATION ROBOT -----
 void initActionneur();
 void sequenceRecalage();
 void waitLaunch();
-
 //----- STRATEGIE DEPLACEMENT -----
 void homologationPrimaire();
 void homologationSecondaire();
 void matchPrimaire();
 void matchSecondaire();
 void testLancerGobelet();
+//----- FIN DE MATCH -----
+void finMatch();
+//----- AUTRES -----
+void majTemps();
+void majScore();
+void attente(int temps);
+
 
 //DEMANDE L'ETAT DU DEPLACEMENT----------------
 int askNavigation();
@@ -96,15 +93,6 @@ void sendNavigation(byte fonction, int X, int Y, int rot);
 
 //ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF----------------
 void sendNavigation(byte fonction, int rot, int dist);
-
-//MISE A JOUR DU TEMPS DE MATCH----------------
-void majTemps();
-
-//PROCEDURE D'ATTENTE----------------
-void attente(int temps);
-
-//PROCEDURE DE FIN DE MATCH----------------
-void finMatch();
 
 //ENVOI UNE COMMANDE TURN GO----------------
 void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go);

@@ -1,7 +1,6 @@
 #include "Strategie.h"
 
-void setup()
-{
+void setup(){
   Serial.begin(9600);       //Demarrage d'un liaison série pour le debug
   Wire.begin();             //Demarrage de la liaison I2C
   delay(500);               //Pause de demarrage avant lancement
@@ -11,9 +10,7 @@ void setup()
 
   waitLaunch();             //Attendre le début du match
 }
-
-void loop()
-{
+void loop(){
   if (typeRobot == ROBOT_PRIMAIRE)
   {
     if (strategie == STRATEGIE_HOMOLOGATION) homologationPrimaire();
@@ -26,8 +23,8 @@ void loop()
   }
 }
 
-void waitLaunch()
-{
+
+void waitLaunch(){
   // Gestion tirette
   while (interface.getTirette())
   {
@@ -194,8 +191,8 @@ void matchSecondaire()
 }
 
 //----------------PROCEDURE D'ATTENTE----------------
-void attente(int temps)
-{
+void attente(int temps){
+
 	int initTemps = millis();
 	while( (millis()-initTemps) <= temps)
 	{
@@ -305,8 +302,7 @@ void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go)
 }
 
 //----------------MISE A JOUR DU TEMPS DE MATCH----------------
-void majTemps()
-{
+void majTemps(){
   tempsRestant = ( TEMPS_MATCH - (millis() - timeInit) ) / 1000;
   if ( tempsRestant <= 0 )
   {
@@ -315,8 +311,7 @@ void majTemps()
 }
 
 //----------------PROCEDURE DE FIN DE MATCH----------------
-void finMatch()
-{
+void finMatch(){
 	// Stopper les moteurs
 	sendNavigation(255, 0, 0);
   servoDrapeau.detach();
