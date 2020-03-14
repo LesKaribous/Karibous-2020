@@ -130,6 +130,6 @@ class IHM
                      "Poser la balise adversaire    ",
                      "Bon match !                   "};
 
-};
+} interface;
 
 #endif

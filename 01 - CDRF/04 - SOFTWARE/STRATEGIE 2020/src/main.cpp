@@ -13,6 +13,7 @@
 */                                                            
                                                                         
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "IHM.h"
 #include "planner.h"
