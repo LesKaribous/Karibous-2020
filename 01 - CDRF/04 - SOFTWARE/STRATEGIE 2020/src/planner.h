@@ -70,14 +70,23 @@ void processBlocks      (long);
 void handleSuccess      (action_t cb);
 void handleFailure      (action_t cb); //Useful for relative mode
 
-void planAction         (action_t);
+void handleBlockSuccess (block_t cb);
+void handleBlockFailure (block_t cb); //Useful for relative mode
 
+void checkBlock(block_t cb);
+void checkAction(action_t cb);
+
+void planAction         (action_t);
 void cancelBlockAction  (int);
 void cancelAction       (int blockIndex, int actionIndex);
 
 action_t getBlockAction (int);
 action_t getAction      (int);
 
+
+
+
+//Plan function
 void planAbsoluteMove   (float X, float Y);
 void planAbsoluteMove   (float X, float Y, float alpha);
 

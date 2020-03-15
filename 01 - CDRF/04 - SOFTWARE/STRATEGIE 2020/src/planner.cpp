@@ -135,6 +135,70 @@ action_t getCurrentActions(){
     return buffer[blockIndex].actions[buffer[blockIndex].index];
 }
 
+
+
+/****************************
+ *        Main logic        *
+ ****************************/
+
+void processActions(block_t cb, long timeLeft){
+    //Process state
+    action_t currentAction = cb.actions[cb.index];
+    switch (currentAction.state)
+    {
+        case blockState::scheduled :
+            if(timeLeft > currentAction.duration)
+                execActions(currentAction);
+            break;
+        case blockState::started :
+            checkAction(currentAction);
+            break;
+        case blockState::failed :
+            handleFailure(currentAction);
+            if(currentAction.cancelable){
+                cb.index++;
+                if(cb.index == cb.actionsCount) cb.state = blockState::done;
+            }
+            else cb.state = blockState::failed;
+            break;
+        case blockState::done :
+            handleSuccess(currentAction);
+            cb.index++;
+            if(cb.index == cb.actionsCount) cb.state = blockState::done;
+            break;      
+        default:
+            break;
+    }
+}
+
+void processBlocks(long timeLeft){
+    //Process state
+    block_t currentBlock = getCurrentBlock();
+    switch (currentBlock.state)
+    {
+        case blockState::scheduled :
+            if(timeLeft > currentBlock.duration)
+                execBlock(currentBlock);
+            break;
+        case blockState::started :
+            processActions(currentBlock, timeLeft);
+            break;
+        case blockState::failed :
+            handleBlockFailure(currentBlock);
+            if(currentBlock.cancelable) blockIndex++;
+            //else stuck
+            break;
+        case blockState::done :
+            handleBlockSuccess(currentBlock);
+            blockIndex++;
+            if(blockIndex == blockCount) finMatch();
+            break;      
+        default:
+            break;
+    }
+}
+
+
 void checkBlock(block_t cb){
 
 }
@@ -175,60 +239,10 @@ bool execBlock(block_t a){
     return true;
 }
 
-void processActions(block_t cb, long timeLeft){
-    //Process state
-    action_t currentAction = cb.actions[cb.index];
-    switch (currentAction.state)
-    {
-        case blockState::scheduled :
-            if(timeLeft > currentAction.duration)
-                execActions(currentAction);
-            break;
-        case blockState::started :
-            checkAction(currentAction);
-            break;
-        case blockState::failed :
-            handleFailure(currentAction);
-            if(currentAction.cancelable) cb.index++;
-            break;
-        case blockState::done :
-            handleSuccess(currentAction);
-            cb.index++;
-            if(cb.index == cb.actionsCount) cb.state = blockState::done;
-            break;      
-        default:
-            break;
-    }
-}
 
-void processBlocks(long timeLeft){
-    //Process state
-    block_t currentBlock = getCurrentBlock();
-    switch (currentBlock.state)
-    {
-        case blockState::scheduled :
-            if(timeLeft > currentBlock.duration)
-                execBlock(currentBlock);
-            break;
-        case blockState::started :
-            processActions(currentBlock, timeLeft);
-            break;
-        case blockState::failed :
-            handleBlockFailure(currentBlock);
-            if(currentBlock.cancelable) blockIndex++;
-            break;
-        case blockState::done :
-            handleBlockSuccess(currentBlock);
-            blockIndex++;
-            if(blockIndex == blockCount) finMatch();
-            break;      
-        default:
-            break;
-    }
-}
-
-
-
+/****************************
+ *      Actions planner     *
+ ****************************/
 void planAbsoluteMove(float X, float Y){
 
 }
