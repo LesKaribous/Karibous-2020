@@ -12,11 +12,6 @@
 *   description : Stratedy firmware for CDFR 2020
 */                                                            
                                                                         
-#include <Arduino.h>
-#include <Wire.h>
-
-#include "IHM.h"
-#include "planner.h"
 #include "strategy.h"
 
 void setup(){

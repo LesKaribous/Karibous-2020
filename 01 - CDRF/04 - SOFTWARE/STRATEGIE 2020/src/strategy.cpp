@@ -181,3 +181,145 @@ void initActionneur()
       servoDrapeau.detach();
     }
 }
+
+
+
+
+//----------------PROCEDURE D'ATTENTE----------------
+void attente(int temps){
+
+	int initTemps = millis();
+	while( (millis()-initTemps) <= temps)
+	{
+		majTemps();
+		interface.matchScreen(score,tempsRestant,nbrBadCRC);
+	}
+}
+
+void majScore(int points, int multiplicateur){
+	score = score + (points*multiplicateur);
+}
+
+
+//----------------DEMANDE L'ETAT DU DEPLACEMENT----------------
+int askNavigation()
+{
+  int etatNavigation ;
+  char reponseNavigation ;
+  Wire.requestFrom(CARTE_DEPLACEMENT, 1);
+  while(Wire.available())
+  {
+    reponseNavigation = Wire.read();
+  }
+  // Serial.print("repNav:");
+  // Serial.println(reponseNavigation);
+  if (reponseNavigation=='N') etatNavigation = RECU ;
+  else if (reponseNavigation=='O') etatNavigation = TERMINEE ;
+  else if (reponseNavigation=='E') etatNavigation = ERRONEE ;
+  else reponseNavigation = BIZARRE ;
+	return etatNavigation;
+}
+
+//----------------ENVOI UNE COMMANDE DE DEPLACEMENT ABSOLU----------------
+void sendNavigation(byte fonction, int X, int Y, int rot)
+{
+	// Stockage des valeurs à envoyer dans le buffer
+  bufNavAbsolu[0]=fonction;
+	bufNavAbsolu[1]=rot >> 8;
+	bufNavAbsolu[2]=rot & 255;
+	bufNavAbsolu[3]=X >> 8;
+	bufNavAbsolu[4]=X & 255;
+	bufNavAbsolu[5]=Y >> 8;
+	bufNavAbsolu[6]=Y & 255;
+
+	// Calcul du CRC
+	crcNavRelatif = CRC8.smbus(bufNavAbsolu, sizeof(bufNavAbsolu));
+	//Serial.println(crcNavRelatif);
+
+	// Envoi des données
+	Wire.beginTransmission(CARTE_DEPLACEMENT);
+	for(int i=0;i<=6;i++)
+	{
+		Wire.write(bufNavRelatif[i]);
+	}
+	//Wire.write(crcNavRelatif);
+	Wire.endTransmission();
+
+}
+
+//----------------ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF----------------
+void sendNavigation(byte fonction, int rot, int dist)
+{
+	if ( equipe == EQUIPE_VIOLET ) rot = -rot ;
+	// Stockage des valeurs à envoyer dans le buffer
+	bufNavRelatif[0]=fonction;
+	bufNavRelatif[1]=rot >> 8;
+	bufNavRelatif[2]=rot & 255;
+	bufNavRelatif[3]=dist >> 8;
+	bufNavRelatif[4]=dist & 255;
+	// Calcul du CRC
+	crcNavRelatif = CRC8.smbus(bufNavRelatif, sizeof(bufNavRelatif));
+	//Serial.println(crcNavRelatif);
+	// Envoi des données
+	Wire.beginTransmission(CARTE_DEPLACEMENT);
+	for(int i=0;i<=4;i++)
+	{
+		Wire.write(bufNavRelatif[i]);
+	}
+	Wire.write(crcNavRelatif);
+	Wire.endTransmission();
+}
+
+//----------------ENVOI UNE COMMANDE TURN GO----------------
+void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go)
+{
+  int reponseNavigation ;
+  bool optionDetection = detection || adversaire; //
+
+	bitWrite(optionNavigation,0,optionDetection); // false -> la detection adverse est active
+	bitWrite(optionNavigation,1,recalage);
+	bitWrite(optionNavigation,2,ralentit);
+	sendNavigation(optionNavigation, turn, go);
+	//attente(100);
+  reponseNavigation = askNavigation();
+	while(reponseNavigation!=TERMINEE)
+	{
+    if (reponseNavigation==ERRONEE)
+    {
+      sendNavigation(optionNavigation, turn, go);
+      nbrBadCRC++;
+      // Serial.print("nbrBadCRC:");
+      // Serial.println(nbrBadCRC);
+    }
+    attente(100);
+    reponseNavigation = askNavigation();
+	}
+}
+
+//----------------MISE A JOUR DU TEMPS DE MATCH----------------
+void majTemps(){
+  tempsRestant = ( TEMPS_MATCH - (millis() - timeInit) ) / 1000;
+  if ( tempsRestant <= 0 )
+  {
+    finMatch();
+  }
+}
+
+//----------------PROCEDURE DE FIN DE MATCH----------------
+void finMatch(){
+	// Stopper les moteurs
+	sendNavigation(255, 0, 0);
+  servoDrapeau.detach();
+  servoDrapeau.attach(pinServoDrapeau);
+  servoDrapeau.write(30);
+  delay(500);
+  servoDrapeau.detach();
+	// Boucle infinie
+	while(1)
+	{
+		// Stopper les moteurs
+		sendNavigation(255, 0, 0);
+    // Stoppe la Balise
+    //digitalWrite(pinBalise,LOW);
+	}
+}
