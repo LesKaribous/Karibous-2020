@@ -8,22 +8,23 @@
  *         Typedef          *
  ****************************/
 
-enum ActionType { servo,
+enum blockType {  actuator,
                   absMove,
                   relMove };
 
-enum State      { done,
+enum blockState{  done,
                   failed,
                   started,
-                  scheduled };
+                  scheduled,
+                  corrupted };
 
 //template <class T>
 struct action_t {
     //T parameters[MAX_PARAM];
     float parameters[MAX_PARAMS];
 
-    ActionType blockType;
-    State blockState;
+    blockType type;
+    blockState state;
 
     long estDuration;
     bool checkForOppenent;
@@ -33,37 +34,40 @@ struct action_t {
     int scoreValue;
 };
 
-
-
 /****************************
  *        Variables         *
  ****************************/
 
 action_t buffer[MAX_BUFFER_SIZE];
-int currentAction,
+int currentIndex,
     actionSize;
-
-
 
 /****************************
  *        Methods           *
  ****************************/
 
-void initPlanner();
-void processActions(long timeLeft);
+void initPlanner        ();
+bool execBlock          (action_t);
+void processBlocks      (long);
 
-void planAction(action_t a);
-void cancelAction(int i);
-action_t getAction(int i);
+void handleSuccess      (action_t cb);
+void handleFailure      (action_t cb);
 
-void planAbsoluteMove(float X, float Y);
-void planAbsoluteMove(float X, float Y, float alpha);
 
-void planRelativeMove(float startAlpha, float distance);
-void planRelativeMove(float startAlpha, float distance, float endAlpha);
 
-void planServoMove(float angle);
+void planAction         (action_t);
+void cancelAction       (int);
+action_t getAction      (int);
 
+void planAbsoluteMove   (float X, float Y);
+void planAbsoluteMove   (float X, float Y, float alpha);
+
+void planRelativeMove   (float startAlpha, float distance);
+void planRelativeMove   (float startAlpha, float distance, float endAlpha);
+
+void planServoMove      (float angle);
+
+void finMatch(){};
 
 
 
