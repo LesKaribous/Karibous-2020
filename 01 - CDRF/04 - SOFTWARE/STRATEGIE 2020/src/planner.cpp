@@ -244,19 +244,57 @@ bool execBlock(block_t a){
  *      Actions planner     *
  ****************************/
 void planAbsoluteMove(float X, float Y){
-
+    action_t a;
+    a.cancelable = false;
+    a.checkForOppenent = true;
+    a.duration = -1; //To be calculated
+    a.parameters[0] = X;
+    a.parameters[1] = Y;
+    a.scoreValue = 0;
+    a.state = blockState::scheduled;
+    a.type = blockType::absMove;
+    planAction(a);
 }
 
 void planAbsoluteMove(float X, float Y, float alpha){
-
+    action_t a;
+    a.cancelable = false;
+    a.checkForOppenent = true;
+    a.duration = -1; //To be calculated
+    a.parameters[0] = X;
+    a.parameters[1] = Y;
+    a.parameters[2] = alpha;
+    a.scoreValue = 0;
+    a.state = blockState::scheduled;
+    a.type = blockType::absMove;
+    planAction(a);
 }
 
 void planRelativeMove(float startAlpha, float distance){
-
+   action_t a;
+    a.cancelable = false;
+    a.checkForOppenent = true;
+    a.duration = -1; //To be calculated
+    a.parameters[0] = startAlpha;
+    a.parameters[1] = distance;
+    a.scoreValue = 0;
+    a.state = blockState::scheduled;
+    a.type = blockType::absMove;
+    planAction(a);
 }
 
 void planRelativeMove(float startAlpha, float distance, float endAlpha){
-
+   action_t a;
+    a.cancelable = false;
+    a.checkForOppenent = true;
+    a.duration = -1; //To be calculated
+    a.parameters[0] = startAlpha;
+    a.parameters[1] = distance;
+    a.parameters[2] = endAlpha;
+    a.scoreValue = 0;
+    a.state = blockState::scheduled;
+    a.type = blockType::absMove;
+    planAction(a);
 }
 
 
