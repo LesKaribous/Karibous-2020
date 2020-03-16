@@ -227,7 +227,20 @@ void handleSuccess(action_t cb){
  * @brief Execute an action
  */
 bool execActions(action_t a){
-
+    switch (a.type)
+    {
+    case blockType::absMove :
+        /* code */
+        break;
+    case blockType::relMove :
+        turnGo(ADVERSAIRE_NON,false,true,0,180);
+        break;
+    case blockType::actuator :
+        /* code */
+        break;
+    default:
+        break;
+    }
     return true;
 }
 

@@ -20,6 +20,13 @@ enum blockState{  done,
                   corrupted };
 
 
+struct behavior{
+    bool checkForOppenent;
+    bool recalage;
+    long speed;
+};
+
+
 //template <class T>
 struct action_t {
     //T parameters[MAX_PARAM];
@@ -27,6 +34,8 @@ struct action_t {
 
     blockType type;
     blockState state;
+
+    behavior settings;
 
     long duration; //manual & auto
     bool checkForOppenent;
@@ -49,6 +58,7 @@ struct block_t{
 };
 
 
+behavior default
 
 /****************************
  *        Variables         *
