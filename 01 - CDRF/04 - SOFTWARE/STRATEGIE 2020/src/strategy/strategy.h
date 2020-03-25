@@ -5,9 +5,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "IHM.h"
-#include "planner.h"
-#include "communication.h"
+#include "IHM/IHM.h"
+#include "planner/Planner.h"
+#include "communication/communication.h"
   
 
 /***************************************

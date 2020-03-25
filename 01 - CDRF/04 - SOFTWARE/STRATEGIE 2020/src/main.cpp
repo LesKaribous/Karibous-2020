@@ -12,7 +12,7 @@
 *   description : Stratedy firmware for CDFR 2020
 */                                                            
                                                                         
-#include "strategy.h"
+#include "./strategy/strategy.h"
 
 void setup(){
   Serial.begin(9600);       //Demarrage d'un liaison série pour le debug

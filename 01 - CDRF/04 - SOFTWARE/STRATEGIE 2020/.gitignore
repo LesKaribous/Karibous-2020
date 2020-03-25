@@ -3,6 +3,9 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
-old
-lib
 .vscode
+.old
+lib/*
+!lib/README
+test/*
+!test/README
