@@ -15,6 +15,9 @@ void homologationSecondaire()
   turnGo(ADVERSAIRE_NON,false,true,0,-50);
 
   brasGauche.setPosition(50,0,LOW,LOW,0);
+
+  Planner.planActuation(50,0,LOW,LOW,0);
+
   brasDroit.setPosition(50,0,LOW,LOW,300);
 
   brasGauche.setPosition(100,100,HIGH,LOW,0);

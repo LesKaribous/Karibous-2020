@@ -13,9 +13,9 @@ Trajectory::Trajectory(){}
 
 Trajectory::~Trajectory(){}
 
-ACtuation::Actuation (){}
+Actuation::Actuation (){}
 
-ACtuation::~Actuation (){}
+Actuation::~Actuation (){}
 
 /****************************
  *      Planner class       *

@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#include "actuator/Bras.h"
 #include "IHM/IHM.h"
 #include "planner/Planner.h"
 #include "communication/communication.h"

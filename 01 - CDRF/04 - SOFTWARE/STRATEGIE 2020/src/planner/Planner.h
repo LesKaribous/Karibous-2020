@@ -1,17 +1,14 @@
-/*    ______ __                               
-*    |   __ \  |.---.-.-----.-----.-----.----.
-*    |    __/  ||  _  |     |     |  -__|   _|
-*    |___|  |__||___._|__|__|__|__|_____|__|  
-*/                                         
+//     ______ __                               
+//    |   __ \  |.---.-.-----.-----.-----.----.
+//    |    __/  ||  _  |     |     |  -__|   _|
+//    |___|  |__||___._|__|__|__|__|_____|__|  
 
 #ifndef PLANNER_H
 #define PLANNER_H
+                                         
+#include "planner/Actions.h"
 
 #define MAX_BUFFER_SIZE 100
-
-/****************************
- *         Typedef          *
- ****************************/
 
 
 /****************************
@@ -22,11 +19,12 @@ static class Planner{
 public :
 //  ___Constructor___
 
-    Planner();
+     Planner();
+    ~Planner();
 
 //  _____Methods_____
 
-    void initPlanner        ();
+    void initPlanner        (); // TODO remove this
 
 //Action methods
 
@@ -40,13 +38,13 @@ public :
     Action getAction      (int);
 
 //Block Methods
-    void planBlock          (block_t);
+    void planBlock          (Block);
     void processBlocks      (long);
-    bool execBlock          (Action);
-    void checkBlock         (block_t cb);
+    bool execBlock          (Block);
+    void checkBlock         (Block cb);
     
-    void handleBlockSuccess (block_t cb);
-    void handleBlockFailure (block_t cb); //Useful for relative mode
+    void handleBlockSuccess (Block cb);
+    void handleBlockFailure (Block cb); //Useful for relative mode
 
     void cancelBlockAction  (int);
     void cancelAction       (int blockIndex, int actionIndex);
@@ -63,10 +61,9 @@ public :
     void planServoMove      (float angle);
 
 //  _____Attributes_____
-
+ 
 protected :
-    block_t buffer[MAX_BUFFER_SIZE];
-
+    Block buffer[MAX_BUFFER_SIZE];
     int blockIndex,
         blockCount;
 

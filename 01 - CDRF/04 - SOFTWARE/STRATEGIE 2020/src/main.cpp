@@ -11,7 +11,7 @@
 *   license : void
 *   description : Stratedy firmware for CDFR 2020
 */                                                            
-                                                                        
+
 #include "./strategy/strategy.h"
 
 void setup(){
