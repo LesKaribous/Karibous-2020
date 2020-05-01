@@ -106,7 +106,18 @@ void ComNavigation::turnGo(bool adversaire, bool recalage,bool ralentit,int turn
       // Serial.print("nbrBadCRC:");
       // Serial.println(nbrBadCRC);
     }
-    attente(100);
+
+
+    
+
+
+    //------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //attente(100); //A corriger et à remettre !!!!!
+    //------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
     reponseNavigation = askNavigation();
 	}
 }
