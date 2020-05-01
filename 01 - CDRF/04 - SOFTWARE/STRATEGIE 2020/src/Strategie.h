@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Servo.h>
+//#include <Servo.h>
 #include "Bras.h"
 #include "IHM.h"
 #include "ComNavigation.h"
@@ -31,10 +31,11 @@ const int TEMPS_MATCH = 101000 ;
 // Declaration des pins E/S
 const int pinPompeGauche=14,pinEVGauche=15,pinPompeDroit=16,pinEVDroit=17 ;
 const int pinServoDroit=20,pinServoVentouseDroit=21,pinServoGauche=22,pinServoVentouseGauche=23 ;
+const int pinAscenseurGauche = 31, PinPotardGauche = A13 ;
 
 const int pinServoDrapeau = 8;
-//const int pinServoBrasDroit = 9 ;      // Pin Servo bras droit
-//const int pinServoBrasGauche = 10 ;     // Pin Servo bras gauche
+const int pinServoBrasDroit = 29 ;      // Pin Servo bras droit
+const int pinServoBrasGauche = 30 ;     // Pin Servo bras gauche
 
 int pinBalise ;
 
@@ -42,6 +43,9 @@ Bras brasDroit ;
 Bras brasGauche ;
 
 Servo servoDrapeau ;
+Servo servoBrasDroit ;
+Servo servoBrasGauche ;
+
 
 int nbrBadCRC = 0   ; // Nombre de CRC érronés
 int nbrBizarre = 0  ; // Nombre de réponses bizarres

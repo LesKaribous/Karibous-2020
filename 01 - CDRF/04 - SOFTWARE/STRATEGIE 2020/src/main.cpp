@@ -1,5 +1,6 @@
 #include "Strategie.h"
 
+
 void setup(){
   Serial.begin(9600);       //Demarrage d'un liaison série pour le debug
   Wire.begin();             //Demarrage de la liaison I2C
@@ -10,6 +11,8 @@ void setup(){
 
   waitLaunch();             //Attendre le début du match
 }
+
+
 void loop(){
   if (typeRobot == ROBOT_PRIMAIRE)
   {
@@ -68,10 +71,24 @@ void initActionneur()
     typeRobot = interface.getTypeRobot();
   // Initialisation des actionneurs en fonction du type de robot
     brasDroit.setPin(pinServoDroit,pinServoVentouseDroit,pinPompeDroit,pinEVDroit);
-    brasGauche.setPin(pinServoGauche,pinServoVentouseGauche,pinPompeGauche,pinEVGauche);
+    brasGauche.setPin(pinServoGauche,pinServoVentouseGauche,pinPompeGauche,pinEVGauche,pinAscenseurGauche,PinPotardGauche);
 
-    brasDroit.setLimit(45,150,10,90);
-    brasGauche.setLimit(140,45,160,70);
+    if (typeRobot == ROBOT_PRIMAIRE)
+    {
+      brasDroit.setLimit(45,140,10,90);
+      brasGauche.setLimit(140,45,160,70,86,400,600);
+    }
+    else
+    {
+      brasDroit.setLimit(45,150,10,90);
+      brasGauche.setLimit(140,45,160,70);
+    }
+
+    //--------------------------------------------------------
+      brasGauche.setAscenseur(0,1000);
+      brasGauche.setAscenseur(100,1000);
+      brasGauche.setAscenseur(50,1000);
+    //--------------------------------------------------------
 
     brasDroit.setPosition(0,0,LOW,LOW,0);
     brasGauche.setPosition(0,0,LOW,LOW,2000);
@@ -86,7 +103,18 @@ void initActionneur()
     if (typeRobot == ROBOT_PRIMAIRE)
     {
       // Si strategie pour le robot primaire selectionné :
+      servoBrasDroit.detach();
+      servoBrasGauche.detach();
 
+      servoBrasDroit.attach(pinServoBrasDroit);
+      servoBrasGauche.attach(pinServoBrasGauche);
+
+      servoBrasDroit.write(75);
+      servoBrasGauche.write(90);
+      delay(2000);
+      servoBrasDroit.write(170);
+      servoBrasGauche.write(5);
+      delay(2000);
     }
     else
     {
