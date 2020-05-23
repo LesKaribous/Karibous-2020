@@ -1,31 +1,4 @@
-void mouseDisplay()
-{
-  if (toggleValue)showCoordinates(mouseX, mouseY);
-}
 
-void showCoordinates(int pX, int pY)
-{
-  //create two vector to calculate the angle between them
-  PVector v1 = new PVector(1, 0);    // Vector for the origin
-  PVector v2 = new PVector(pX-(displayWidth/2), pY-(displayHeight/2));
-  fill(0, 102, 153);
-  textSize(11);
-  text(int(dist(displayWidth/2, displayHeight/2, pX, pY))+" cm", pX+7, pY-5);       // the distance
-  text(int(degrees(PVector.angleBetween(v1, v2)))+" °", pX+7, pY-16);       // the angle
-  circle(pX, pY, 5);
-}
-
-void robotDisplay()
-{
-  // Print the help text at the top right of the interface
-  fill(157, 157, 157);
-  textSize(11);
-  text("Press 'V' to show/hide the GUI",displayWidth-180, 20);
-  //----------------------------------------------------
-   // Create the robot at the center of the interface
-   fill(222, 158, 29);
-   circle(displayWidth/2, displayHeight/2, 30);
-}
 
 void createGUI()
 {
@@ -66,15 +39,6 @@ void createGUI()
     .setPosition(330,20)
     .setSize(40,20)
     ;
-  //Add a slider
-  speed = cp5.addSlider("speed")
-    .setCaptionLabel("Speed")
-    .setColorCaptionLabel(color(20,20,20))
-    .setPosition(20, 50)
-    .setSize(180, 20)
-    .setRange(0, 255)
-    .setValue(0)
-    ;
   // Creation of the console
   consoleArea = cp5.addTextarea("Console")
     .setPosition(20, height-200)
@@ -84,14 +48,117 @@ void createGUI()
     .setColor(color(255))
     .setColorBackground(color(0,44,91,240))
     ;
-  // Creation of a toggle for the Visibility of the coordinates
-  toggleCoordinate = cp5.addToggle("toggleCoordinate")
-    .setCaptionLabel("Show coordinates")
+    
+  // Creation of the toggle
+  togglePumpLeft = cp5.addToggle("togglePumpLeft")
+    .setCaptionLabel("Pompe Gauche")
     .setColorCaptionLabel(color(20,20,20))
-    .setPosition(20,150)
+    .setPosition(guiPaddingX,150)
     .setSize(50,20)
     .setValue(false)
     .setMode(ControlP5.SWITCH)
+    ;
+    
+  toggleValveLeft = cp5.addToggle("toggleValveLeft")
+    .setCaptionLabel("Vanne Gauche")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX,200)
+    .setSize(50,20)
+    .setValue(false)
+    .setMode(ControlP5.SWITCH)
+    ;  
+    
+  togglePumpRight = cp5.addToggle("togglePumpRight")
+    .setCaptionLabel("Pompe Droite")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+guiDecalageBrasX,150)
+    .setSize(50,20)
+    .setValue(false)
+    .setMode(ControlP5.SWITCH)
+    ;
+  
+  toggleValveRight = cp5.addToggle("toggleValveRight")
+    .setCaptionLabel("Vanne Droite")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+guiDecalageBrasX,200)
+    .setSize(50,20)
+    .setValue(false)
+    .setMode(ControlP5.SWITCH)
+    ;
+    
+  knobServoLeft = cp5.addKnob("knobServoLeft")
+    .setCaptionLabel("Servo Gauche")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX,240)
+    .setSize(50,50)
+    .setValue(0)
+    .setNumberOfTickMarks(10) 
+    .showTickMarks()
+    .setViewStyle(ControlP5.ARC)
+    .setRange(0,100)
+    .setAngleRange(HALF_PI)
+    .setStartAngle(-HALF_PI)
+    ;
+    
+  knobServoRight = cp5.addKnob("knobServoRight")
+    .setCaptionLabel("Servo Droit")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+guiDecalageBrasX,240)
+    .setSize(50,50)
+    .setValue(0)
+    .setNumberOfTickMarks(10) 
+    .showTickMarks()
+    .setViewStyle(ControlP5.ARC)
+    .setRange(0,100)
+    .setAngleRange(HALF_PI)
+    .setStartAngle(-HALF_PI)
+    ;
+    
+  knobMiniServoLeft = cp5.addKnob("knobMiniServoLeft")
+    .setCaptionLabel("Poignet Gauche")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+5,310)
+    .setSize(40,40)
+    .setValue(0)
+    .setNumberOfTickMarks(10) 
+    .showTickMarks()
+    .setViewStyle(ControlP5.ARC)
+    .setRange(0,100)
+    .setAngleRange(HALF_PI)
+    .setStartAngle(-HALF_PI)
+    ;
+    
+  knobMiniServoRight = cp5.addKnob("knobMiniServoRight")
+    .setCaptionLabel("Poignet Droit")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+guiDecalageBrasX+5,310)
+    .setSize(40,40)
+    .setValue(0)
+    .setNumberOfTickMarks(10) 
+    .showTickMarks()
+    .setViewStyle(ControlP5.ARC)
+    .setRange(0,100)
+    .setAngleRange(HALF_PI)
+    .setStartAngle(-HALF_PI)
+    ;
+
+  //Add a slider
+  heightSliderLeft = cp5.addSlider("hLeft")
+    .setCaptionLabel("Hauteur \n Gauche")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+15, 380)
+    .setSize(20, 200)
+    .setRange(0, 255)
+    .setValue(0)
+    ;
+    
+  heightSliderRight = cp5.addSlider("hRight")
+    .setCaptionLabel("Hauteur \n Droite")
+    .setColorCaptionLabel(color(20,20,20))
+    .setPosition(guiPaddingX+guiDecalageBrasX+15, 380)
+    .setSize(20, 200)
+    .setRange(0, 255)
+    .setValue(0)
     ;
 
    console = cp5.addConsole(consoleArea);
@@ -113,7 +180,7 @@ public void toggleCoordinate(boolean flag)
 
 public void serialSend()
 {
- int speedValue = int(speed.getValue());
+ int speedValue = int(heightSliderLeft.getValue());
  myPort.write(byte(speedValue));
  //myPort.write('\n');
  println("Parameters sent : speed set to " + speedValue);
@@ -164,66 +231,6 @@ void keyPressed()
   cp5.get(Button.class, "serialStop").setVisible(GUIVisible);
   cp5.get(Button.class, "serialRefresh").setVisible(GUIVisible);
   cp5.get(ScrollableList.class, "dropdown").setVisible(GUIVisible);
-  cp5.get(Slider.class,"speed").setVisible(GUIVisible);
-  cp5.get(Toggle.class,"toggleCoordinate").setVisible(GUIVisible);
-}
-
-class robotCircle
-{
-  final int radiusMax ;     // Max radius of the "searching circle"
-  int radius ;              // Radius of the "searching circle"
-  int searchTime = 0;
-  int searchTimeLast = 0 ;
-  float boucle ;            // Duration of a loop in milliseconds by default
-
-  robotCircle(int setRadiusMax, float setBoucle)
-  {
-    radiusMax = setRadiusMax ;
-    radius = radiusMax ;
-    boucle = setBoucle ;
-    searchTimeLast = millis();
-  }
-
-  void updateXY(int xCircle, int yCircle ,int distance)
-  {
-    searchTime = millis()- searchTimeLast; // Take the elapsed time
-    float nbr = map(searchTime,boucle,0,radiusMax,0);
-
-    radius=radius-int(nbr);
-    if(radius<=0) radius = radiusMax;
-    searchTimeLast = millis();
-
-    float transparency = map(radius,radiusMax,radiusMax/2,40,0);
-    float red = map(distance,0,300,255,0);
-    float green = 44 + map(distance,0,300,0,255);
-
-    pushMatrix();
-    // Transparency evolution
-    fill(red,green,91,transparency);
-    noStroke();
-    ellipse(xCircle, yCircle, radius, radius);
-
-    fill(255,0);
-    strokeWeight(abs(map(radius,radiusMax,radiusMax/2,8,0)));
-    // Transparency evolution
-    stroke(red,green,91,transparency);
-    float radiusExtern = map(radius,radiusMax,0,radiusMax,radiusMax+100);
-    ellipse(xCircle, yCircle, radiusExtern, radiusExtern);
-
-    // Create the robot circle
-    fill(red, green, 0, 125);
-    circle(xCircle, yCircle, map(distance,0,300,70,20));
-
-    // Create and show the coordinates if visibility checked
-    if (toggleValue) showCoordinates(xCircle, yCircle);
-
-    popMatrix();
-  }
-
-  void updateDA(int distanceCircle, int angleCircle)
-  {
-    float px = width/2 + cos(radians(angleCircle))*distanceCircle;
-    float py = height/2 + sin(radians(angleCircle))*distanceCircle;
-    updateXY((int)px, (int)py, distanceCircle);
-  }
+  //cp5.get(Slider.class,"speed").setVisible(GUIVisible);
+  //cp5.get(Toggle.class,"toggleCoordinate").setVisible(GUIVisible);
 }

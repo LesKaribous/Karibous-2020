@@ -5,11 +5,6 @@ import processing.serial.*;          // Import the serial library
 Serial myPort;                       // Create the serial port object
 ControlP5 cp5;                       // Create the CP5 object
 
-// Creation of the object effectCircle
-robotCircle myRobotCircle = new robotCircle(500, 4000.0);
-robotCircle robot1Circle = new robotCircle(200, 3400.0);
-robotCircle robot2Circle = new robotCircle(200, 1000.0);
-
 // Creation of the variable for the GUI
 // Console
 Textarea consoleArea;
@@ -27,15 +22,27 @@ boolean clicSerialStop = false ;
 boolean clicSerialSend = false ;
 boolean clicSerialRefresh = false ;
 // Creation of the sliders
-Slider speed;
+Slider heightSliderLeft;
+Slider heightSliderRight;
 // Creation of the toggles
-Toggle toggleCoordinate;
+Toggle togglePumpLeft;
+Toggle togglePumpRight;
+Toggle toggleValveLeft;
+Toggle toggleValveRight;
+// Creation of the knobs
+Knob knobServoRight;
+Knob knobServoLeft;
+Knob knobMiniServoRight;
+Knob knobMiniServoLeft;
 // State of the toggles
 boolean toggleValue = false;
 // GUI Visibility
 boolean GUIVisible = true;
 // State new message
 boolean newPosition = false;
+
+int guiDecalageBrasX = 120;
+int guiPaddingX= 40;
 
 
 // Communication variables
@@ -58,11 +65,6 @@ void setup()
 void draw()
 {
   background(255);
-  robotDisplay();
-  mouseDisplay();
-
-  //myRobotCircle.updateXY(width/2,height/2,300);
-  if(newPosition)robot2Circle.updateDA(distance,angle);
 }
 
 void serialEvent(Serial p)
