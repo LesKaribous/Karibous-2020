@@ -34,6 +34,12 @@ Knob knobServoRight;
 Knob knobServoLeft;
 Knob knobMiniServoRight;
 Knob knobMiniServoLeft;
+
+color blackFont = color(20,20,20);
+color blue = color(0,0,100);
+color baseGreen = color(0,80,0);
+color clearGreen = color(0,200,0);
+color selectGreen = color(0,250,0);
 // State of the toggles
 boolean toggleValue = false;
 // GUI Visibility
@@ -42,7 +48,8 @@ boolean GUIVisible = true;
 boolean newPosition = false;
 
 int guiDecalageBrasX = 120;
-int guiPaddingX= 40;
+int guiPaddingBrasX= 40;
+int guiPaddingBrasY= 120;
 
 
 // Communication variables
@@ -54,7 +61,7 @@ int distance, angle;
 
 void setup()
 {
-  size(displayWidth,displayHeight);
+  size(250,850);
   frameRate(24);
   noStroke();
   fill(0);
