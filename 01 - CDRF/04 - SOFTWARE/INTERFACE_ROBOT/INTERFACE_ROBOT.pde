@@ -5,6 +5,8 @@ import processing.serial.*;          // Import the serial library
 Serial myPort;                       // Create the serial port object
 ControlP5 cp5;                       // Create the CP5 object
 
+PImage img;
+
 // Creation of the variable for the GUI
 // Console
 Textarea consoleArea;
@@ -29,6 +31,19 @@ Toggle togglePumpLeft;
 Toggle togglePumpRight;
 Toggle toggleValveLeft;
 Toggle toggleValveRight;
+
+Toggle toggleDirectSend;
+
+Textlabel labelDirectSend;
+
+Textfield textKnobServoLeft;
+Textfield textKnobServoRight;
+Textfield textKnobPoignetLeft;
+Textfield textKnobPoignetRight;
+
+Textfield textSliderLeft;
+Textfield textSliderRight;
+
 // Creation of the knobs
 Knob knobServoRight;
 Knob knobServoLeft;
@@ -49,7 +64,7 @@ boolean newPosition = false;
 
 int guiDecalageBrasX = 120;
 int guiPaddingBrasX= 40;
-int guiPaddingBrasY= 120;
+int guiPaddingBrasY= 40;
 
 
 // Communication variables
@@ -61,7 +76,7 @@ int distance, angle;
 
 void setup()
 {
-  size(250,850);
+  size(250,750);
   frameRate(24);
   noStroke();
   fill(0);
@@ -72,6 +87,7 @@ void setup()
 void draw()
 {
   background(255);
+  image(img, 25, 250, 200, 200);
 }
 
 void serialEvent(Serial p)
