@@ -14,21 +14,27 @@
 // -------------------- ETATS DE LA STRATEGIE DE NAVIGATION --------------------
 
 // Etats de la navigation
-#define NAVIGATION_AVAILABLE 0  // Navigation Disponible
-#define SET_ROTATION 1          // Lance la rotation du robot
-#define WAIT_ROTATION 2         // Attend la fin de la rotation
-#define SET_DISTANCE 3          // Lance le déplacement en distance
-#define WAIT_DISTANCE 4         // Attend la fin du déplacement en distance
-#define STOP_OPPONENT 5         // Arrêt du robot en cas d'adversaire
-#define WAIT_OPPONENT 6         // Attente du passage de l'adversaire
-
-#define END_OF_MATCH 255        // Etat particulier de fin de match
+typedef enum {
+  NAVIGATION_AVAILABLE,
+  SET_ROTATION,
+  WAIT_ROTATION,
+  SET_DISTANCE,
+  WAIT_DISTANCE,
+  STOP_OPPONENT,
+  WAIT_OPPONENT,
+  END_OF_MATCH = 255
+} Navigation ;
 
 // Etats de la position demandée
-#define WAITING_TARGET 0   // Disponible pour nouvelle position
-#define NEW_REL_TARGET 1   // Nouvelle position relative enregistrée
-#define NEW_ABS_TARGET 2   // Nouvelle position relative enregistrée
-#define ERROR_BAD_CRC 3    // Nouvelle position erronée. CRC nok.
+typedef enum {
+  WAITING_TARGET,
+  NEW_REL_TARGET,
+  NEW_ABS_TARGET,
+  ERROR_BAD_CRC,
+} Communication ;
+
+Communication stateCom = WAITING_TARGET;
+Navigation stateNav = NAVIGATION_AVAILABLE;
 
 // -------------------- PARAMETRES RELATIFS AUX MOTEURS ------------------------
 
@@ -92,9 +98,6 @@ int16_t currentPos[3];        //rotation, X, Y
 
 int targetDis = 0 ;
 int targetRot = 0 ;
-
-byte stateCom = WAITING_TARGET;
-byte stateNav = NAVIGATION_AVAILABLE;
 
 bool optionAdversaire = false;
 bool optionRecalage   = false;
