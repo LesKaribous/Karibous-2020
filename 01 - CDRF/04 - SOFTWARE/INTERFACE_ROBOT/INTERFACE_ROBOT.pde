@@ -15,7 +15,7 @@ Println console;
 ScrollableList serialList;
 // Creation of the buttons
 Button serialBegin;
-Button serialSend;
+Button buttonEnvoyer;
 Button serialStop;
 Button serialRefresh;
 // State of the buttons
@@ -34,6 +34,14 @@ Toggle toggleValveRight;
 
 Toggle toggleDirectSend;
 
+Button resetTurn;
+Button resetGo;
+
+Button flecheAvant;
+Button flecheArriere;
+Button flecheGauche;
+Button flecheDroite;
+
 Textlabel labelDirectSend;
 
 Textfield textKnobServoLeft;
@@ -44,11 +52,18 @@ Textfield textKnobPoignetRight;
 Textfield textSliderLeft;
 Textfield textSliderRight;
 
+Textfield textTurnParameter;
+Textfield textGoParameter;
+
 // Creation of the knobs
 Knob knobServoRight;
 Knob knobServoLeft;
 Knob knobMiniServoRight;
 Knob knobMiniServoLeft;
+
+Tab tabBras;
+Tab tabExtra;
+Tab tabDeplacement;
 
 color blackFont = color(20,20,20);
 color blue = color(0,0,100);
@@ -68,8 +83,9 @@ int guiPaddingBrasY= 40;
 
 
 // Communication variables
-byte[] receivedBuf = new byte[6];
+byte[] receivedBuf = new byte[14];
 int[] transformBuf = new int[4];
+byte[] sendBuf = new byte[16];
 
 int distance, angle;
 
@@ -87,6 +103,7 @@ void setup()
 void draw()
 {
   background(255);
+  tint(255,255,255,80);
   image(img, 25, 250, 200, 200);
 }
 

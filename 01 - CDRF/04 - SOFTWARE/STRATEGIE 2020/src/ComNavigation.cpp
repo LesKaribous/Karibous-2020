@@ -58,7 +58,6 @@ void ComNavigation::sendNavigation(byte fonction, int X, int Y, int rot)
 	}
 	//Wire.write(crcNavRelatif);
 	Wire.endTransmission();
-
 }
 
 //----------------ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF----------------
@@ -87,7 +86,6 @@ void ComNavigation::sendNavigation(byte fonction, int rot, int dist)
 //----------------ENVOI UNE COMMANDE TURN GO----------------
 void ComNavigation::turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go)
 {
-  int reponseNavigation ;
   bool optionDetection = _detection || adversaire; //
   byte optionNavigation = 0;
 
@@ -95,29 +93,4 @@ void ComNavigation::turnGo(bool adversaire, bool recalage,bool ralentit,int turn
 	bitWrite(optionNavigation,1,recalage);
 	bitWrite(optionNavigation,2,ralentit);
 	sendNavigation(optionNavigation, turn, go);
-	//attente(100);
-  reponseNavigation = askNavigation();
-	while(reponseNavigation!=_TERMINEE)
-	{
-    if (reponseNavigation==_ERRONEE)
-    {
-      sendNavigation(optionNavigation, turn, go);
-      _nbrBadCRC++;
-      // Serial.print("nbrBadCRC:");
-      // Serial.println(nbrBadCRC);
-    }
-
-
-    
-
-
-    //------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //attente(100); //A corriger et à remettre !!!!!
-    //------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
-    reponseNavigation = askNavigation();
-	}
 }

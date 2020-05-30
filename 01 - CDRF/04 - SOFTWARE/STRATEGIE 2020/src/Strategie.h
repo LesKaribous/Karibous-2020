@@ -46,8 +46,8 @@ Servo servoDrapeau ;
 Servo servoBrasDroit ;
 Servo servoBrasGauche ;
 
-
-int nbrBadCRC = 0   ; // Nombre de CRC érronés
+int navError = 0   ; // Nombre d'erreur de com avec la navigation
+/*
 int nbrBizarre = 0  ; // Nombre de réponses bizarres
 
 FastCRC8 CRC8;
@@ -58,8 +58,11 @@ byte bufNavAbsolu[6]={0,0,0,0,0,0}; // Buffer d'envoi des ordres de navigation a
 byte crcNavAbsolu = 0 ; // CRC de controle pour les ordres de navigation absolus
 
 byte optionNavigation = 0;
+*/
+ComNavigation nav ;
 
 int score = 0;
+bool matchEnCours = false;
 
 double tempsRestant = TEMPS_MATCH;
 double timeInit=0;
@@ -72,15 +75,19 @@ bool detection = false , strategie = false , typeRobot = ROBOT_PRIMAIRE , equipe
 void setup();
 void loop();
 //----- INITIALISATION ROBOT -----
+void setupActionneur();
 void initActionneur();
 void sequenceRecalage();
 void waitLaunch();
-//----- STRATEGIE DEPLACEMENT -----
+void interfaceLink();
+//----- STRATEGIES -----
 void homologationPrimaire();
 void homologationSecondaire();
 void matchPrimaire();
 void matchSecondaire();
 void testLancerGobelet();
+//----- COMMANDES DE DEPLACEMENT -----
+void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go);
 //----- FIN DE MATCH -----
 void finMatch();
 //----- AUTRES -----
@@ -88,15 +95,12 @@ void majTemps();
 void majScore();
 void attente(int temps);
 
-
+/*
 //DEMANDE L'ETAT DU DEPLACEMENT----------------
 int askNavigation();
-
 //ENVOI UNE COMMANDE DE DEPLACEMENT ABSOLU----------------
 void sendNavigation(byte fonction, int X, int Y, int rot);
-
 //ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF----------------
 void sendNavigation(byte fonction, int rot, int dist);
-
 //ENVOI UNE COMMANDE TURN GO----------------
-void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go);
+*/

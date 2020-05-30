@@ -1,6 +1,171 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import controlP5.*; 
+import processing.serial.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class INTERFACE_ROBOT extends PApplet {
 
 
-void createGUI()
+                  // Import the CP5 library
+          // Import the serial library
+
+Serial myPort;                       // Create the serial port object
+ControlP5 cp5;                       // Create the CP5 object
+
+PImage img;
+
+// Creation of the variable for the GUI
+// Console
+Textarea consoleArea;
+Println console;
+// Creation of the lists
+ScrollableList serialList;
+// Creation of the buttons
+Button serialBegin;
+Button buttonEnvoyer;
+Button serialStop;
+Button serialRefresh;
+// State of the buttons
+boolean clicSerialBegin = false ;
+boolean clicSerialStop = false ;
+boolean clicSerialSend = false ;
+boolean clicSerialRefresh = false ;
+// Creation of the sliders
+Slider heightSliderLeft;
+Slider heightSliderRight;
+// Creation of the toggles
+Toggle togglePumpLeft;
+Toggle togglePumpRight;
+Toggle toggleValveLeft;
+Toggle toggleValveRight;
+
+Toggle toggleDirectSend;
+
+Button resetTurn;
+Button resetGo;
+
+Button flecheAvant;
+Button flecheArriere;
+Button flecheGauche;
+Button flecheDroite;
+
+Textlabel labelDirectSend;
+
+Textfield textKnobServoLeft;
+Textfield textKnobServoRight;
+Textfield textKnobPoignetLeft;
+Textfield textKnobPoignetRight;
+
+Textfield textSliderLeft;
+Textfield textSliderRight;
+
+Textfield textTurnParameter;
+Textfield textGoParameter;
+
+// Creation of the knobs
+Knob knobServoRight;
+Knob knobServoLeft;
+Knob knobMiniServoRight;
+Knob knobMiniServoLeft;
+
+Tab tabBras;
+Tab tabExtra;
+Tab tabDeplacement;
+
+int blackFont = color(20,20,20);
+int blue = color(0,0,100);
+int baseGreen = color(0,80,0);
+int clearGreen = color(0,200,0);
+int selectGreen = color(0,250,0);
+// State of the toggles
+boolean toggleValue = false;
+// GUI Visibility
+boolean GUIVisible = true;
+// State new message
+boolean newPosition = false;
+
+int guiDecalageBrasX = 120;
+int guiPaddingBrasX= 40;
+int guiPaddingBrasY= 40;
+
+
+// Communication variables
+byte[] receivedBuf = new byte[14];
+int[] transformBuf = new int[4];
+byte[] sendBuf = new byte[16];
+
+int distance, angle;
+
+
+public void setup()
+{
+  
+  frameRate(24);
+  noStroke();
+  fill(0);
+
+  createGUI();
+}
+
+public void draw()
+{
+  background(255);
+  tint(255,255,255,80);
+  image(img, 25, 250, 200, 200);
+}
+
+public void serialEvent(Serial p)
+{
+  p.readBytesUntil(10,receivedBuf);
+  p.clear();
+  if(receivedBuf[0]=='b')
+  {
+    print("Raw datas : ");
+    for(int i=0;i<=5;i++)
+    {
+      print(receivedBuf[i] + " ");
+    }
+    println();
+
+    for(int i =0;i<=3;i++)
+       {
+         transformBuf[i] = unsignedByte(receivedBuf[i+1]);
+       }
+    distance = transformBuf[0] << 8 | transformBuf[1];
+    angle = transformBuf[2] << 8 | transformBuf[3];
+    print(distance);
+    print(" ; ");
+    println(angle);
+    newPosition = true;
+  }
+  else
+  {
+    println("Serial corruption - informations ignored");
+    newPosition = false;
+  }
+}
+
+// Convert a signed Byte ( 127 to - 128 ) to an Int between 0 and 255
+public int unsignedByte(byte value)
+{
+  if(value < 0) return value + 256 ;
+  else return value;
+}
+
+
+public void createGUI()
 {
   img = loadImage("K.png");
   
@@ -366,38 +531,38 @@ void createGUI()
    //----------------------------------------------------
 }
 
-void getParameterGauche()
+public void getParameterGauche()
 {
-  sendBuf[1] = byte(int(knobServoLeft.getValue()));
-  sendBuf[2] = byte(int(knobMiniServoLeft.getValue()));
-  sendBuf[3] = byte(togglePumpLeft.getBooleanValue());
-  sendBuf[4] = byte(toggleValveLeft.getBooleanValue());
-  sendBuf[5] = byte(int(heightSliderLeft.getValue()));
+  sendBuf[1] = PApplet.parseByte(PApplet.parseInt(knobServoLeft.getValue()));
+  sendBuf[2] = PApplet.parseByte(PApplet.parseInt(knobMiniServoLeft.getValue()));
+  sendBuf[3] = PApplet.parseByte(togglePumpLeft.getBooleanValue());
+  sendBuf[4] = PApplet.parseByte(toggleValveLeft.getBooleanValue());
+  sendBuf[5] = PApplet.parseByte(PApplet.parseInt(heightSliderLeft.getValue()));
 }
 
-void getParameterDroit()
+public void getParameterDroit()
 {
-  sendBuf[6] = byte(int(knobServoRight.getValue()));
-  sendBuf[7] = byte(int(knobMiniServoRight.getValue()));
-  sendBuf[8] = byte(togglePumpRight.getBooleanValue());
-  sendBuf[9] = byte(toggleValveRight.getBooleanValue());
-  sendBuf[10] = byte(int(heightSliderRight.getValue()));
+  sendBuf[6] = PApplet.parseByte(PApplet.parseInt(knobServoRight.getValue()));
+  sendBuf[7] = PApplet.parseByte(PApplet.parseInt(knobMiniServoRight.getValue()));
+  sendBuf[8] = PApplet.parseByte(togglePumpRight.getBooleanValue());
+  sendBuf[9] = PApplet.parseByte(toggleValveRight.getBooleanValue());
+  sendBuf[10] = PApplet.parseByte(PApplet.parseInt(heightSliderRight.getValue()));
 }
 
-void getParameterDeplacement()
+public void getParameterDeplacement()
 {
-  sendBuf[11] = byte(int(textTurnParameter.getText()) >> 8);
-  sendBuf[12] = byte(int(textTurnParameter.getText()) & 255);
-  sendBuf[13] = byte(int(textGoParameter.getText()) >> 8);
-  sendBuf[14] = byte(int(textGoParameter.getText()) & 255);
+  sendBuf[11] = PApplet.parseByte(PApplet.parseInt(textTurnParameter.getText()) >> 8);
+  sendBuf[12] = PApplet.parseByte(PApplet.parseInt(textTurnParameter.getText()) & 255);
+  sendBuf[13] = PApplet.parseByte(PApplet.parseInt(textGoParameter.getText()) >> 8);
+  sendBuf[14] = PApplet.parseByte(PApplet.parseInt(textGoParameter.getText()) & 255);
 }
 
-void setParameterDeplacement(int turnOrder, int goOrder)
+public void setParameterDeplacement(int turnOrder, int goOrder)
 {
-  sendBuf[11] = byte(turnOrder >> 8);
-  sendBuf[12] = byte(turnOrder & 255);
-  sendBuf[13] = byte(goOrder >> 8);
-  sendBuf[14] = byte(goOrder & 255);
+  sendBuf[11] = PApplet.parseByte(turnOrder >> 8);
+  sendBuf[12] = PApplet.parseByte(turnOrder & 255);
+  sendBuf[13] = PApplet.parseByte(goOrder >> 8);
+  sendBuf[14] = PApplet.parseByte(goOrder & 255);
 }
 
 public void buttonEnvoyer()
@@ -415,7 +580,7 @@ public void buttonEnvoyer()
 
 public void flecheAvant()
 {
-  int facteur = int(textGoParameter.getText());
+  int facteur = PApplet.parseInt(textGoParameter.getText());
   if (facteur<0) facteur = - facteur;
   
   sendBuf[0] = 'b';
@@ -431,7 +596,7 @@ public void flecheAvant()
 
 public void flecheArriere()
 {
-  int facteur = int(textGoParameter.getText());
+  int facteur = PApplet.parseInt(textGoParameter.getText());
   if (facteur<0) facteur = - facteur;
   
   sendBuf[0] = 'b';
@@ -447,7 +612,7 @@ public void flecheArriere()
 
 public void flecheGauche()
 {
-  int facteur = int(textTurnParameter.getText());
+  int facteur = PApplet.parseInt(textTurnParameter.getText());
   if (facteur<0) facteur = - facteur;
   
   sendBuf[0] = 'b';
@@ -463,7 +628,7 @@ public void flecheGauche()
 
 public void flecheDroite()
 {
-  int facteur = int(textTurnParameter.getText());
+  int facteur = PApplet.parseInt(textTurnParameter.getText());
   if (facteur<0) facteur = - facteur;
   
   sendBuf[0] = 'b';
@@ -484,10 +649,10 @@ public void serialBegin()
    clicSerialBegin = true ;
    serialBegin.setCaptionLabel("re-connect");
  }
- myPort = new Serial(this, Serial.list()[int(serialList.getValue())], 115200);
+ myPort = new Serial(this, Serial.list()[PApplet.parseInt(serialList.getValue())], 115200);
  myPort.buffer(14);
  myPort.bufferUntil('\n');
- println("Serial connection has begin on port " + int(serialList.getValue()));
+ println("Serial connection has begin on port " + PApplet.parseInt(serialList.getValue()));
 }
 
 public void serialRefresh()
@@ -516,7 +681,7 @@ public void serialStop()
   println("Serial connection has been stopped");
 }
 
-void sendBuffer()
+public void sendBuffer()
 {
   for(int i=0;i<=15;i++)
   {
@@ -532,7 +697,7 @@ void sendBuffer()
   println(")");
 }
 
-void keyPressed()
+public void keyPressed()
 {
   if ( key == 'v' ) GUIVisible = !GUIVisible;
   if ( key == 'h' )
@@ -547,42 +712,42 @@ void keyPressed()
     // On test le focus, et on met à jour la valeur du controlleur correspondant
     if (textKnobServoLeft.isFocus())
     {
-      int value = int(textKnobServoLeft.getText());
+      int value = PApplet.parseInt(textKnobServoLeft.getText());
       knobServoLeft.setValue(value);
       print("Nouvelle valeur servo gauche : ");
       println(value);
     }
     if (textKnobServoRight.isFocus())
     {
-      int value = int(textKnobServoRight.getText());
+      int value = PApplet.parseInt(textKnobServoRight.getText());
       knobServoRight.setValue(value);
       print("Nouvelle valeur servo droit : ");
       println(value);
     }
     if (textKnobPoignetLeft.isFocus())
     {
-      int value = int(textKnobPoignetLeft.getText());
+      int value = PApplet.parseInt(textKnobPoignetLeft.getText());
       knobMiniServoLeft.setValue(value);
       print("Nouvelle valeur poignet gauche : ");
       println(value);
     }
     if (textKnobPoignetRight.isFocus())
     {
-      int value = int(textKnobPoignetRight.getText());
+      int value = PApplet.parseInt(textKnobPoignetRight.getText());
       knobMiniServoRight.setValue(value);
       print("Nouvelle valeur poignet droit : ");
       println(value);
     }
     if (textSliderLeft.isFocus())
     {
-      int value = int(textSliderLeft.getText());
+      int value = PApplet.parseInt(textSliderLeft.getText());
       heightSliderLeft.setValue(value);
       print("Nouvelle valeur ascenseur gauche : ");
       println(value);
     }
     if (textSliderRight.isFocus())
     {
-      int value = int(textSliderRight.getText());
+      int value = PApplet.parseInt(textSliderRight.getText());
       heightSliderRight.setValue(value);
       print("Nouvelle valeur ascenseur droit : ");
       println(value);
@@ -601,4 +766,14 @@ void keyPressed()
   //cp5.get(ScrollableList.class, "dropdown").setVisible(GUIVisible);
   //cp5.get(Slider.class,"speed").setVisible(GUIVisible);
   //cp5.get(Toggle.class,"toggleCoordinate").setVisible(GUIVisible);
+}
+  public void settings() {  size(250,750); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "INTERFACE_ROBOT" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
 }

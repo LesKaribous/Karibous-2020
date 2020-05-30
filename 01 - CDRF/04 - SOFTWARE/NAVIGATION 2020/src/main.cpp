@@ -49,11 +49,8 @@ void loop()
   //------Actualisation des moteurs------
 	MDroit.run();
 	MGauche.run();
-
-
   //------Affichage du debug------
   //debug();
-
   //------Maj focntions moteurs------
 	updatePos();
 	adversaire();
@@ -293,147 +290,36 @@ void bordure()
 	 {
 	 	bitWrite(BORDURE,i,digitalRead(PIN_BORDURE[i]));
 	 }
-	 //Serial.println(BORDURE,BIN);
-	 //delay(200);
-
 }
-
-// bool detection(int capteur, int iteration)
-// {
-// 	int valCapteur = 0;
-// 	valCapteur = analogRead(capteur);
-// 	for ( int i = 0;i<=iteration;i++)
-// 	{
-// 		valCapteur += analogRead(capteur);
-// 	}
-// 	valCapteur = valCapteur/iteration;
-// 	return (valCapteur>=seuilAvant) ;
-// }
 
 void adversaire()
 {
-	// //Si la detection adverse est activée
-	// if (!optionAdversaire)
-	// {
-	// 	// -----------Si on detecte un adversaire à l'avant-------------
-	// 	if (digitalReadFast(adversaireAvant))
-	// 	{
-	// 		// Si on avait rien detecté pour le moment
-	// 		if (!presenceAvantTemp)
-	// 		{
-	// 			presenceAvantTemp = true ;
-	// 			angleAvant = analogRead(angleBalise);
-	// 		}
-	// 	}
-	// 	else if (presenceAvantTemp)
-	// 	{
-	// 		angleAvant = analogRead(angleBalise)-angleAvant;
-	// 		angleAvant = abs(angleAvant); // Voir doc Arduino. Ne rien mettre d'autre dans la fonction abs()
-	// 		presenceAvantTemp = false ;
-	// 		Serial.println(angleAvant);
-	// 		if (angleAvant >= seuilAvant)
-	// 		{
-	// 			// Un adversaire est trop proche
-	// 			presenceAvant = true ;
-	// 			// On lance un timer d'attente que l'adversaire soit parti
-	// 			avantTimeInit = millis();
-	// 		}
-	// 	}
-	// 	// ------------Si on detecte un adversaire à l'arriere-------------
-	// 	if (digitalReadFast(adversaireArriere))
-	// 	{
-	// 		// Si on avait rien detecté pour le moment
-	// 		if (!presenceArriereTemp)
-	// 		{
-	// 			presenceArriereTemp = true ;
-	// 			angleArriere = analogRead(angleBalise);
-	// 		}
-	// 	}
-	// 	else if (presenceArriereTemp)
-	// 	{
-	// 		angleArriere = analogRead(angleBalise)-angleArriere;
-	// 		angleArriere = abs(angleArriere); // Voir doc Arduino. Ne rien mettre d'autre dans la fonction abs()
-	// 		presenceArriereTemp = false ;
-	// 		//Serial.println(angleArriere);
-	// 		if (angleArriere >= seuilArriere)
-	// 		{
-	// 			// Un adversaire est trop proche
-	// 			presenceArriere = true ;
-	// 			// On lance un timer d'attente que l'adversaire soit parti
-	// 			arriereTimeInit = millis();
-	// 		}
-	// 	}
-	// 	if((millis()-avantTimeInit)>=sensorTime && presenceAvant==true)
-	// 	{
-	// 		// L'adversaire est trop loin depuis sufisamment longtemps.
-	// 		presenceAvant = false;
-	// 		presenceAvantTemp = false ;
-	// 	}
-	// 	if((millis()-arriereTimeInit)>=sensorTime && presenceArriere==true)
-	// 	{
-	// 		// L'adversaire est trop loin depuis sufisamment longtemps.
-	// 		presenceArriere = false;
-	// 		presenceArriereTemp = false ;
-	// 	}
-	// }
-	// else
-	// {
-	// 	presenceArriere = false;
-	// 	presenceAvant = false;
-	// }
 	// Si la detection adverse est activée
 	if (!optionAdversaire)
 	{
 		// Adversaire Avant
 		if (digitalReadFast(adversaireAvant))
 		{
-			if (!presenceAvant)
-			{
-				presenceAvant = true ;
-			}
+			if (!presenceAvant) presenceAvant = true ;
+			//Demarre ou reset le comptage de temps
 			avantTimeInit = millis();
 		}
-		else
-		{
-			if((millis()-avantTimeInit)>=sensorTime)
-			{
-				presenceAvant = false;
-			}
-		}
+		else if((millis()-avantTimeInit)>=sensorTime) presenceAvant = false;
+
 		// Adversaire Arriere
 		if (digitalReadFast(adversaireArriere))
 		{
-			if (!presenceArriere)
-			{
-				presenceArriere = true ;
-			}
+			if (!presenceAvant) presenceArriere = true ;
+			//Demarre ou reset le comptage de temps
 			arriereTimeInit = millis();
 		}
-		else
-		{
-			if((millis()-arriereTimeInit)>=sensorTime)
-			{
-				presenceArriere = false;
-			}
-		}
+		else if((millis()-arriereTimeInit)>=sensorTime) presenceArriere = false;
 	}
 	else
 	{
 		presenceArriere = false;
 		presenceAvant = false;
 	}
-
-	// UNIQUEMENT EN DEBUG !!!!!!!!!!!
-	/*
-	if (presenceAvant || presenceArriere)
-	{
-		Serial.print(presenceAvant);
-		Serial.print(" - ");
-		Serial.println(presenceArriere);
-		delay(200);
-	}
-	*/
-
 }
 
 //Fin de match
@@ -495,7 +381,7 @@ void receiveEvent(int howMany)
 
 	if(howMany == 8)
 	{
-		// Si un déplacement relatif est demandé
+		// Si un déplacement absolu est demandé
 		// On receptionne les données
 		for (int i=0;i<=7;i++)
 		{
