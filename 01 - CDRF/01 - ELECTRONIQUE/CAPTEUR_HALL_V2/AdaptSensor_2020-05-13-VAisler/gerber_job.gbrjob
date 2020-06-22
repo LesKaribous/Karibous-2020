@@ -1,0 +1,24 @@
+{
+    "Header": {
+        "Comment": "All values are metric (mm)",
+        "CreationDate": "2020-05-13T10:20:14Z",
+        "GenerationSoftware": {
+            "Application": "EAGLE",
+            "Vendor": "Autodesk",
+            "Version": "9.5.2"
+        },
+        "Part": "Single"
+    },
+    "Overall": {
+        "BoardThickness": 1.57,
+        "LayerNumber": 2,
+        "Name": {
+            "ProjectId": "AdaptSensor"
+        },
+        "Owner": "Adrien Bracq <adrien@lamachinerie.org>",
+        "Size": {
+            "X": 17.633,
+            "Y": 14.402
+        }
+    }
+}

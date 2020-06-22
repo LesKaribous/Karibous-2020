@@ -8,7 +8,6 @@ void setup(){
   interface.splashScreen(); //Affichage du Logo des Karibous
   setupActionneur();        //Setup des actionneurs
   //initActionneur();         //Initialisation des actionneurs
-  //while(1)interfaceLink();
   delay(1000);              //Attente affichage logo
   waitLaunch();             //Attendre le début du match
 }
@@ -61,8 +60,8 @@ void waitLaunch(){
   // Gestion tirette
   while (interface.getTirette())
   {
-
     interface.updateButtonIHM();
+    interfaceLink();
     if(!interface.getCheck())
     {
       interface.initScreen();
@@ -178,7 +177,7 @@ void sequenceRecalage(){
   //Recalage
   if (typeRobot == ROBOT_PRIMAIRE)
   {
-    turnGo(ADVERSAIRE_NON,false,true,45,50);
+    turnGo(false,true,false,0,-100);
     attente(1000);
     //TO DO
   }

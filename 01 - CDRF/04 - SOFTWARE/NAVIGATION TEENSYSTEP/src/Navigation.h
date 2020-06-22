@@ -22,7 +22,8 @@ typedef enum {
   WAIT_DISTANCE,
   STOP_OPPONENT,
   WAIT_OPPONENT,
-  END_OF_MATCH = 255
+  END_OF_MATCH = 255,
+  WAIT_END_OF_MATCH
 } Navigation ;
 
 // Etats de la position demandée
@@ -39,10 +40,10 @@ Navigation stateNav = NAVIGATION_AVAILABLE;
 // -------------------- PARAMETRES RELATIFS AUX MOTEURS ------------------------
 
 //Variables Pin Moteur
-const int pinStep1 = 2;
-const int pinDir1 = 3;
-const int pinStep2 = 5;
-const int pinDir2 = 6;
+const int pinStepGauche = 5;
+const int pinDirGauche = 6;
+const int pinStepDroit = 2;
+const int pinDirDroit = 3;
 
 const int pinSleep = 4;
 
@@ -51,8 +52,8 @@ const int pinM1 = 0;
 const int pinM2 = 1;
 
 // Declaration des Stepper et du controller
-Stepper mGauche(pinStep1,pinDir1);   //STEP pin =  2, DIR pin = 3
-Stepper mDroit(pinStep2, pinDir2);   //STEP pin =  5, DIR pin = 6
+Stepper mGauche(pinStepGauche,pinDirGauche);   //STEP pin =  2, DIR pin = 3
+Stepper mDroit(pinStepDroit, pinDirDroit);   //STEP pin =  5, DIR pin = 6
 StepControl robot;
 
 // Variable par defaut pour le réglage des déplacements
@@ -61,12 +62,12 @@ float FacteurDroit  = 1.0;
 float FacteurGauche = 1.0;
 float FacteurRot    = 1.0;
 
-uint32_t VitesseMaxDroite = 10000;
-uint32_t VitesseMaxGauche = 10000;
+uint32_t VitesseMaxDroite = 5000;
+uint32_t VitesseMaxGauche = 5000;
 uint32_t AccelRot         = 5000;
-uint32_t AccelMaxDroite   = 10000;
-uint32_t AccelMaxGauche   = 10000;
-uint32_t AccelStop        = 10000;
+uint32_t AccelMaxDroite   = 5000;
+uint32_t AccelMaxGauche   = 5000;
+uint32_t AccelStop        = 5000;
 
 // Paramètres liés aux robots
 // Primaire :
@@ -83,6 +84,12 @@ const float secondaireFacteurRot = 14.0;
 //------------------------- GESTION DU TYPE DE ROBOT ---------------------------
 
 const int pinRobot = 17;
+
+//------------------------- GESTION DE CAPTEURS BORDURE ------------------------
+
+// AV_DROIT , AV_GAUCHE , AR_DROIT , AR_GAUCHE
+const int pinBorderSensor[4] = {13,14,15,16};
+bool borderState[4] = {0,0,0,0};
 
 //------------------------ COMMUNICATION de NAVIGATION -------------------------
 
@@ -107,9 +114,8 @@ bool optionRalentit   = false;
 
 
 void changeTypeRobot(bool type);
+void getBorderState();
 void strategieNavigation();
-//----- Fin de match -----
-void finMatch();
 //----- Communications -----
 void receiveEvent(int howMany);
 void requestEvent();

@@ -20,6 +20,8 @@ void setup()
   digitalWrite(pinSleep, LOW);
 	// Init du type de robot
 	changeTypeRobot(digitalRead(pinRobot));
+	// Init des pin capteur bordure
+	for (int i=0;i<4;i++) pinMode(pinBorderSensor[i], INPUT_PULLUP)	;
 
 	//------Initialisation des communications------
 	Serial.begin(9600);
@@ -38,8 +40,8 @@ void setup()
 
 void loop()
 {
+	getBorderState();
 	strategieNavigation();
-	Serial.println(stateNav);
 }
 
 void strategieNavigation()
@@ -55,9 +57,9 @@ void strategieNavigation()
 			// Lance la rotation du robot
 			digitalWrite(pinSleep, HIGH);
 			targetRot = relativeRequest[0]*FacteurRot;
-			mGauche.setTargetRel(-targetRot);
-    	mDroit.setTargetRel(-targetRot);
-			robot.move(mGauche,mDroit);
+			mGauche.setTargetRel(targetRot);
+    	mDroit.setTargetRel(targetRot);
+			robot.moveAsync(mGauche,mDroit);
 			stateNav = WAIT_ROTATION ;
 			break;
 		case WAIT_ROTATION 	:
@@ -68,15 +70,26 @@ void strategieNavigation()
 			// Lance le déplacement en distance du robot
 			digitalWrite(pinSleep, HIGH);
 			targetDis = relativeRequest[1]*FacteurX;
-			mGauche.setTargetRel(targetDis);
-			mDroit.setTargetRel(-targetDis);
-			robot.move(mGauche,mDroit);
+			mGauche.setTargetRel(-targetDis);
+			mDroit.setTargetRel(targetDis);
+			robot.moveAsync(mGauche,mDroit);
 			stateCom = WAITING_TARGET;
 			stateNav = WAIT_DISTANCE;
 			break;
 		case WAIT_DISTANCE 	:
 			// Attend la fin du déplacement en distance
-			if (!robot.isRunning()) stateNav = NAVIGATION_AVAILABLE ;
+			// Si recalage demandé et marche arriere
+			if (optionRecalage && targetDis < 0)
+			{
+				if (borderState[2]) pinMode(pinStepDroit,INPUT);
+				else if (borderState[3]) pinMode(pinStepGauche,INPUT);
+			}
+			if (!robot.isRunning())
+			{
+				stateNav = NAVIGATION_AVAILABLE ;
+				pinMode(pinStepDroit,OUTPUT);
+				pinMode(pinStepGauche,OUTPUT);
+			}
 			break;
 		case STOP_OPPONENT 	:
 			// Arrêt du robot en cas d'adversaire
@@ -86,9 +99,20 @@ void strategieNavigation()
 			break;
 		case END_OF_MATCH 	:
 			// Fin du match
-			finMatch();
+			digitalWrite(pinSleep, HIGH);
+			robot.stopAsync();
+			stateNav = WAIT_END_OF_MATCH ;
+			break;
+	  case WAIT_END_OF_MATCH 	:
+			// Attendre la fin de l'arrêt de fin de match
+			if (!robot.isRunning()) stateNav = NAVIGATION_AVAILABLE ;
 			break;
 	}
+}
+
+void getBorderState()
+{
+	for(int i = 0;i<4;i++) borderState[i] = digitalRead(pinBorderSensor[i]);
 }
 
 void changeTypeRobot(bool type)
@@ -105,18 +129,6 @@ void changeTypeRobot(bool type)
 		FacteurGauche = secondaireFacteurGauche ;
 		FacteurRot 		= secondaireFacteurRot ;
 	}
-}
-
-//Fin de match
-void finMatch()
-{
-
-	//TO DO
-
-   	while(1)
-   	{
-			digitalWrite(pinSleep, LOW);
-   	}
 }
 
 void receiveEvent(int howMany)
@@ -147,7 +159,7 @@ void receiveEvent(int howMany)
 			{
 				optionAdversaire 	= 	bitRead(bufNavRelatif[0], 0);
 				optionRecalage 		= 	bitRead(bufNavRelatif[0], 1);
-				optionRalentit 		= 	bitRead(bufNavRelatif[0],2);
+				optionRalentit 		= 	bitRead(bufNavRelatif[0], 2);
 				// On indique qu'une nouvelle position est disponible
 				stateCom = NEW_REL_TARGET;
 			}
