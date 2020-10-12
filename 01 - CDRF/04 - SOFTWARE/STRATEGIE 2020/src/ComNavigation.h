@@ -11,15 +11,18 @@ class ComNavigation
     ComNavigation();
     ~ComNavigation();
 
-    void setEquipe(bool equipe);
+    void setTeam(bool team);
+    void setGlobalDetection(bool globalDetection);
     void setDetection(bool detection);
+    void setRecalibration(bool recalibration);
+    void setSpeed(bool speed);
     int getNbrBadCRC();
 
     //DEMANDE L'ETAT DU DEPLACEMENT
     int askNavigation();
     //ENVOI UNE COMMANDE TURN GO
-    void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go);
     void turnGo(int turn, int go);
+    void turnGo(bool detection, bool recalibration,bool speed,int turn, int go);
     //ENVOI UNE COMMANDE DE DEPLACEMENT ABSOLU
     void sendNavigation(byte fonction, int X, int Y, int rot);
     //ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF
@@ -38,7 +41,7 @@ class ComNavigation
     const bool _EQUIPE_JAUNE = 1 ;
     const bool _EQUIPE_VIOLET = 0 ;
 
-    bool _equipe = _EQUIPE_VIOLET, _detection = false ;
+    bool  _team = _EQUIPE_VIOLET, _globalDetection = false,_detectionState = false, _recalibrationState = false, _speedState = false;
 
     int _nbrBadCRC = 0   ; // Nombre de CRC érronés
     int _nbrBizarre = 0  ; // Nombre de réponses bizarres

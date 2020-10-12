@@ -90,6 +90,9 @@ void waitLaunch(){
   strategie = interface.getStrategie();
   detection = interface.getDetection();
   equipe = interface.getEquipe();
+  // Envois des paramètres à la ComNavigation
+  nav.setGlobalDetection(detection);
+  nav.setTeam(equipe);
   // Delai pour affichage
 	delay (100);
 }
@@ -198,11 +201,16 @@ void sequenceRecalage(){
 }
 
 void matchPrimaire(){
-  turnGo(true,false,false,0,100);
-  turnGo(true,false,false,45,0);
-  turnGo(true,false,false,-45,0);
-  turnGo(true,true,false,0,-100);
-  turnGo(true,false,false,0,100);
+  nav.setDetection(true);
+  nav.setRecalibration(false);
+  nav.setSpeed(false);
+
+  turnGo(0,100);
+  turnGo(45,0);
+  turnGo(-45,0);
+  turnGo(0,-100);
+  turnGo(0,100);
+
   finMatch();
 }
 
@@ -231,6 +239,22 @@ void majScore(int points, int multiplicateur){
 }
 
 //----------------ENVOI UNE COMMANDE TURN GO----------------
+void turnGo(int turn, int go)
+{
+  nav.turnGo(turn,go);
+
+  int reponseNavigation = nav.askNavigation();
+	while(reponseNavigation!=TERMINEE)
+	{
+    if (reponseNavigation==ERRONEE)
+    {
+      nav.turnGo(turn,go);
+      navError++;
+    }
+    attente(100);
+    reponseNavigation = nav.askNavigation();
+	}
+}
 void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go)
 {
 	nav.turnGo(adversaire,recalage,ralentit,turn,go);
@@ -261,11 +285,6 @@ void majTemps(){
 void finMatch(){
 	// Stopper les moteurs
 	nav.sendNavigation(255, 0, 0);
-  servoDrapeau.detach();
-  servoDrapeau.attach(pinServoDrapeau);
-  servoDrapeau.write(30);
-  delay(500);
-  servoDrapeau.detach();
 	// Boucle infinie
 	while(1)
 	{

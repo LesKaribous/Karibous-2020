@@ -88,6 +88,7 @@ void matchSecondaire();
 void testLancerGobelet();
 //----- COMMANDES DE DEPLACEMENT -----
 void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go);
+void turnGo(int turn, int go);
 //----- FIN DE MATCH -----
 void finMatch();
 //----- AUTRES -----

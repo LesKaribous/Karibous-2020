@@ -5,11 +5,20 @@ ComNavigation::ComNavigation(){
 }
 ComNavigation::~ComNavigation(){}
 
-void ComNavigation::setEquipe(bool equipe){
-  _equipe = equipe ;
+void ComNavigation::setTeam(bool team){
+  _team = team ;
+}
+void ComNavigation::setGlobalDetection(bool globalDetection){
+  _globalDetection = globalDetection ;
 }
 void ComNavigation::setDetection(bool detection){
-  _detection = detection ;
+  _detectionState = detection ;
+}
+void ComNavigation::setRecalibration(bool recalibration){
+  _recalibrationState = recalibration ;
+}
+void ComNavigation::setSpeed(bool speed){
+  _speedState = speed ;
 }
 int ComNavigation::getNbrBadCRC(){
   return _nbrBadCRC;
@@ -63,7 +72,7 @@ void ComNavigation::sendNavigation(byte fonction, int X, int Y, int rot)
 //----------------ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF----------------
 void ComNavigation::sendNavigation(byte fonction, int rot, int dist)
 {
-	if ( _equipe == _EQUIPE_VIOLET ) rot = -rot ;
+	if ( _team == _EQUIPE_VIOLET ) rot = -rot ;
 	// Stockage des valeurs à envoyer dans le buffer
 	_bufNavRelatif[0]=fonction;
 	_bufNavRelatif[1]=rot >> 8;
@@ -84,13 +93,22 @@ void ComNavigation::sendNavigation(byte fonction, int rot, int dist)
 }
 
 //----------------ENVOI UNE COMMANDE TURN GO----------------
-void ComNavigation::turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go)
+void ComNavigation::turnGo(int turn, int go)
 {
-  bool optionDetection = _detection || adversaire; //
+  turnGo(_detectionState,_recalibrationState,_speedState,turn, go);
+}
+
+void ComNavigation::turnGo(bool detection, bool recalibration,bool speed,int turn, int go)
+{
+  bool optionDetection = _globalDetection || detection;
   byte optionNavigation = 0;
 
-	bitWrite(optionNavigation,0,optionDetection); // false -> la detection adverse est active
-	bitWrite(optionNavigation,1,recalage);
-	bitWrite(optionNavigation,2,ralentit);
+	bitWrite(optionNavigation,0,optionDetection);
+	bitWrite(optionNavigation,1,recalibration);
+	bitWrite(optionNavigation,2,speed);
 	sendNavigation(optionNavigation, turn, go);
+
+  setDetection(detection);
+  setRecalibration(recalibration);
+  setSpeed(speed);
 }
