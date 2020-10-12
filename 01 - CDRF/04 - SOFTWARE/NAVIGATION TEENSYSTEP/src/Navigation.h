@@ -91,6 +91,11 @@ const int pinRobot = 17;
 const int pinBorderSensor[4] = {13,14,15,16};
 bool borderState[4] = {0,0,0,0};
 
+//---------------------- GESTION DES CAPTEURS D'ADVERSAIRE  --------------------
+
+const int pinAdversaireArriere = 11;
+const int pinAdversaireAvant = 12;
+
 //------------------------ COMMUNICATION de NAVIGATION -------------------------
 
 FastCRC8 CRC8;
@@ -111,7 +116,6 @@ bool optionRecalage   = false;
 bool optionRalentit   = false;
 
 // --------------------------------------------------
-
 
 void changeTypeRobot(bool type);
 void getBorderState();

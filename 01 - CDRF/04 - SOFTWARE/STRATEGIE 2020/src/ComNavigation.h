@@ -19,6 +19,7 @@ class ComNavigation
     int askNavigation();
     //ENVOI UNE COMMANDE TURN GO
     void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go);
+    void turnGo(int turn, int go);
     //ENVOI UNE COMMANDE DE DEPLACEMENT ABSOLU
     void sendNavigation(byte fonction, int X, int Y, int rot);
     //ENVOI UNE COMMANDE DE DEPLACEMENT RELATIF
