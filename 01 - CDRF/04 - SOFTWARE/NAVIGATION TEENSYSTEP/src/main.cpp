@@ -57,8 +57,8 @@ void strategieNavigation()
 			// Lance la rotation du robot
 			digitalWrite(pinSleep, HIGH);
 			targetRot = relativeRequest[0]*FacteurRot;
-			mGauche.setTargetRel(targetRot);
-    	mDroit.setTargetRel(targetRot);
+			mGauche.setTargetRel(-targetRot);
+    	mDroit.setTargetRel(-targetRot);
 			robot.moveAsync(mGauche,mDroit);
 			stateNav = WAIT_ROTATION ;
 			break;
@@ -84,6 +84,11 @@ void strategieNavigation()
 				if (borderState[2]) pinMode(pinStepDroit,INPUT);
 				else if (borderState[3]) pinMode(pinStepGauche,INPUT);
 			}
+			// Si check adversaire demandé
+			if (optionAdversaire)
+			{
+				//check si les capteurs adversaire sont activés
+			}
 			if (!robot.isRunning())
 			{
 				stateNav = NAVIGATION_AVAILABLE ;
@@ -93,9 +98,16 @@ void strategieNavigation()
 			break;
 		case STOP_OPPONENT 	:
 			// Arrêt du robot en cas d'adversaire
+			// Enregistre la position actuelle (getPosition)
+			// Enregistre la psoition désirée de fin
+			// Met la position du stepper à la position actuelle + decelleration (setPosition)
+			// va a la position actuelle - decelleration
+			// Va à WAIT_OPPONENT
 			break;
 		case WAIT_OPPONENT 	:
 			// Attente du passage de l'adversaire
+			// Reprend la position enregistrée precedemment
+			// Va à SET_DISTANCE
 			break;
 		case END_OF_MATCH 	:
 			// Fin du match

@@ -62,12 +62,12 @@ float FacteurDroit  = 1.0;
 float FacteurGauche = 1.0;
 float FacteurRot    = 1.0;
 
-uint32_t VitesseMaxDroite = 5000;
-uint32_t VitesseMaxGauche = 5000;
-uint32_t AccelRot         = 5000;
-uint32_t AccelMaxDroite   = 5000;
-uint32_t AccelMaxGauche   = 5000;
-uint32_t AccelStop        = 5000;
+uint32_t VitesseMaxDroite = 20000;
+uint32_t VitesseMaxGauche = 20000;
+uint32_t AccelRot         = 20000;
+uint32_t AccelMaxDroite   = 20000;
+uint32_t AccelMaxGauche   = 20000;
+uint32_t AccelStop        = 20000;
 
 // Paramètres liés aux robots
 // Primaire :

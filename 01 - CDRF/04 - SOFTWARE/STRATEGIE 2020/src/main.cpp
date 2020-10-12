@@ -12,7 +12,6 @@ void setup(){
   waitLaunch();             //Attendre le début du match
 }
 
-
 void loop(){
   if (typeRobot == ROBOT_PRIMAIRE)
   {
@@ -95,7 +94,6 @@ void waitLaunch(){
 	delay (100);
 }
 
-
 //----------------INIT ACTIONNEUR-------------
 
 void setupActionneur(){
@@ -103,23 +101,35 @@ void setupActionneur(){
     typeRobot = interface.getTypeRobot();
   // Initialisation des actionneurs en fonction du type de robot
     brasDroit.setPin(pinServoDroit,pinServoVentouseDroit,pinPompeDroit,pinEVDroit);
-    brasGauche.setPin(pinServoGauche,pinServoVentouseGauche,pinPompeGauche,pinEVGauche,pinAscenseurGauche,PinPotardGauche);
+    brasGauche.setPin(pinServoGauche,pinServoVentouseGauche,pinPompeGauche,pinEVGauche);
 
     if (typeRobot == ROBOT_PRIMAIRE)
     {
-      brasDroit.setLimit(45,140,10,90);
-      brasGauche.setLimit(140,45,160,70,86,400,600);
+      brasDroit.setLimit(35,140,10,90);
+      brasGauche.setLimit(110,10,160,70);
+      brasDroit.setPosition(0,0,LOW,LOW,0);
+      brasGauche.setPosition(0,0,LOW,LOW,2000);
+
+      servoBrasDroit.detach();
+      servoBrasGauche.detach();
+
+      servoBrasDroit.attach(pinServoBrasDroit);
+      servoBrasGauche.attach(pinServoBrasGauche);
+
+      servoBrasDroit.write(170);
+      servoBrasGauche.write(5);
     }
     else
     {
       brasDroit.setLimit(45,150,10,90);
       brasGauche.setLimit(140,45,160,70);
+      brasDroit.setPosition(0,0,LOW,LOW,0);
+      brasGauche.setPosition(0,0,LOW,LOW,2000);
     }
+
 }
 
 void initActionneur(){
-
-    brasGauche.setAscenseur(50,1000);
 
     brasDroit.setPosition(0,0,LOW,LOW,0);
     brasGauche.setPosition(0,0,LOW,LOW,2000);
@@ -188,6 +198,11 @@ void sequenceRecalage(){
 }
 
 void matchPrimaire(){
+  turnGo(true,false,false,0,100);
+  turnGo(true,false,false,45,0);
+  turnGo(true,false,false,-45,0);
+  turnGo(true,true,false,0,-100);
+  turnGo(true,false,false,0,100);
   finMatch();
 }
 
