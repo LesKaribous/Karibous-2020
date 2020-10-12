@@ -37,7 +37,7 @@ const int pinServoDrapeau = 8;
 const int pinServoBrasDroit = 29 ;      // Pin Servo bras droit
 const int pinServoBrasGauche = 30 ;     // Pin Servo bras gauche
 
-int pinBalise ;
+const int pinBeacon = 31 ;
 
 Bras brasDroit ;
 Bras brasGauche ;

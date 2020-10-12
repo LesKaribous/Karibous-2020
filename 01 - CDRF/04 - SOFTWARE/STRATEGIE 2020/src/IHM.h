@@ -81,8 +81,8 @@ class IHM
 
   private:
     // Adversaire
-    const bool _ADVERSAIRE_NON = 1 ;
-    const bool _ADVERSAIRE_OUI = 0 ;
+    const bool _ADVERSAIRE_NON = 0 ;
+    const bool _ADVERSAIRE_OUI = 1 ;
 
     // Couleur Equipe
     const bool _EQUIPE_JAUNE = 1 ;
@@ -106,7 +106,7 @@ class IHM
     const int _pinEquipe = A21;          // Pin choix d'équipe
     const int _pinCheck = A22;           // Pin bouton checklist
     const int _pinTypeRobot = 4;            // Pin jumper type de robot
-    
+
     // Logo Karibous
     const byte _LOGO_KARIBOUS_width = 128 ;
     const byte _LOGO_KARIBOUS_height = 33 ;

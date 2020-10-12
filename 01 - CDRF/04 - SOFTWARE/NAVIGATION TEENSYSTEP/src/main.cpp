@@ -20,11 +20,14 @@ void setup()
   digitalWrite(pinSleep, LOW);
 	// Init du type de robot
 	changeTypeRobot(digitalRead(pinRobot));
-	// Init des pin capteur bordure
+	// Init des pins capteurs bordure
 	for (int i=0;i<4;i++) pinMode(pinBorderSensor[i], INPUT_PULLUP)	;
-
+	// Init des pins capteurs adversaire
+	pinMode(pinAdversaireAvant, INPUT_PULLUP)	;
+	pinMode(pinAdversaireArriere, INPUT_PULLUP)	;
 	//------Initialisation des communications------
 	Serial.begin(9600);
+
 	Wire.begin(ADRESSE);
 	Wire.onReceive(receiveEvent);
 	Wire.onRequest(requestEvent);
@@ -36,6 +39,8 @@ void setup()
   mDroit
     .setMaxSpeed(VitesseMaxDroite)      // steps/s
     .setAcceleration(AccelMaxDroite); 	// steps/s^2
+
+
 }
 
 void loop()
@@ -88,6 +93,8 @@ void strategieNavigation()
 			if (optionAdversaire)
 			{
 				//check si les capteurs adversaire sont activés
+				if(targetDis > 0 && digitalRead(pinAdversaireAvant)) stateNav = STOP_OPPONENT ;
+				else if(targetDis < 0 && digitalRead(pinAdversaireArriere))stateNav = STOP_OPPONENT ;
 			}
 			if (!robot.isRunning())
 			{
@@ -102,10 +109,13 @@ void strategieNavigation()
 			// Enregistre la psoition désirée de fin
 			// Met la position du stepper à la position actuelle + decelleration (setPosition)
 			// va a la position actuelle - decelleration
+			robot.stopAsync();
 			// Va à WAIT_OPPONENT
+			stateNav = WAIT_OPPONENT ;
 			break;
 		case WAIT_OPPONENT 	:
 			// Attente du passage de l'adversaire
+
 			// Reprend la position enregistrée precedemment
 			// Va à SET_DISTANCE
 			break;

@@ -93,6 +93,8 @@ void waitLaunch(){
   // Envois des paramètres à la ComNavigation
   nav.setGlobalDetection(detection);
   nav.setTeam(equipe);
+  // Démarrage de la balise
+  digitalWrite(pinBeacon,HIGH);
   // Delai pour affichage
 	delay (100);
 }
@@ -105,6 +107,10 @@ void setupActionneur(){
   // Initialisation des actionneurs en fonction du type de robot
     brasDroit.setPin(pinServoDroit,pinServoVentouseDroit,pinPompeDroit,pinEVDroit);
     brasGauche.setPin(pinServoGauche,pinServoVentouseGauche,pinPompeGauche,pinEVGauche);
+
+    // Initialisation de la pin pinBalise
+    pinMode(pinBeacon,OUTPUT);
+    digitalWrite(pinBeacon,LOW);
 
     if (typeRobot == ROBOT_PRIMAIRE)
     {
@@ -285,6 +291,8 @@ void majTemps(){
 void finMatch(){
 	// Stopper les moteurs
 	nav.sendNavigation(255, 0, 0);
+  // Stopper la Balise
+  digitalWrite(pinBeacon,LOW);
 	// Boucle infinie
 	while(1)
 	{

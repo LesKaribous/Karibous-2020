@@ -89,8 +89,8 @@ void IHM::menuScreen() {
   else _u8g2.print("VIOLET");
   // Etat detection:
   _u8g2.setCursor(colonne2,ligneDebut+10);
-  if ( _detection ) _u8g2.print("SIMPLE");
-  else _u8g2.print("COMPLET");
+  if ( _detection ) _u8g2.print("COMPLET");
+  else _u8g2.print("SIMPLE");
   // Etat type de robot :
   _u8g2.setCursor(colonne2,ligneDebut+20);
   if ( _typeRobot == _ROBOT_PRIMAIRE ) _u8g2.print("PRIMAIRE");
