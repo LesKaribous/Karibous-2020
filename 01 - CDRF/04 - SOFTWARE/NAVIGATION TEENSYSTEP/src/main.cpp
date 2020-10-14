@@ -26,7 +26,7 @@ void setup()
 	pinMode(pinAdversaireAvant, INPUT_PULLUP)	;
 	pinMode(pinAdversaireArriere, INPUT_PULLUP)	;
 	//------Initialisation des communications------
-	Serial.begin(9600);
+	Serial.begin(115200);
 
 	Wire.begin(ADRESSE);
 	Wire.onReceive(receiveEvent);
@@ -46,6 +46,7 @@ void setup()
 void loop()
 {
 	getBorderState();
+	getOpponentState();
 	strategieNavigation();
 }
 
@@ -69,14 +70,21 @@ void strategieNavigation()
 			break;
 		case WAIT_ROTATION 	:
 			// Attend la fin de la rotation
-			if (!robot.isRunning()) stateNav = SET_DISTANCE ;
+			if (!robot.isRunning())
+			{
+				targetDis = relativeRequest[1]*FacteurX;
+				stateNav = SET_DISTANCE ;
+			}
 			break;
 		case SET_DISTANCE  	:
 			// Lance le déplacement en distance du robot
 			digitalWrite(pinSleep, HIGH);
-			targetDis = relativeRequest[1]*FacteurX;
 			mGauche.setTargetRel(-targetDis);
 			mDroit.setTargetRel(targetDis);
+			//Enregistre la position de départ
+			startPositionLeft		=	mGauche.getPosition();
+			startPositionRight	= mDroit.getPosition();
+
 			robot.moveAsync(mGauche,mDroit);
 			stateCom = WAITING_TARGET;
 			stateNav = WAIT_DISTANCE;
@@ -92,10 +100,10 @@ void strategieNavigation()
 			// Si check adversaire demandé
 			if (optionAdversaire)
 			{
-				//check si les capteurs adversaire sont activés
-				if(targetDis > 0 && digitalRead(pinAdversaireAvant)) stateNav = STOP_OPPONENT ;
-				else if(targetDis < 0 && digitalRead(pinAdversaireArriere))stateNav = STOP_OPPONENT ;
+				if 			(targetDis > 0 && presenceAvant) 		stateNav = STOP_OPPONENT ;
+				else if (targetDis < 0 && presenceArriere) 	stateNav = STOP_OPPONENT ;
 			}
+
 			if (!robot.isRunning())
 			{
 				stateNav = NAVIGATION_AVAILABLE ;
@@ -107,6 +115,12 @@ void strategieNavigation()
 			// Arrêt du robot en cas d'adversaire
 			// Enregistre la position actuelle (getPosition)
 			// Enregistre la psoition désirée de fin
+			Serial.print("stop à :");
+			Serial.println(mDroit.getPosition());
+			Serial.print("Distance demandée :");
+			Serial.println(targetDis);
+			Serial.print("Start position :");
+			Serial.println(startPositionRight);
 			// Met la position du stepper à la position actuelle + decelleration (setPosition)
 			// va a la position actuelle - decelleration
 			robot.stopAsync();
@@ -114,10 +128,18 @@ void strategieNavigation()
 			stateNav = WAIT_OPPONENT ;
 			break;
 		case WAIT_OPPONENT 	:
-			// Attente du passage de l'adversaire
-
-			// Reprend la position enregistrée precedemment
-			// Va à SET_DISTANCE
+			// Attendre la fin de la deceleration (vitesse à zero)
+			Serial.print("|");
+			if (targetDis > 0 && !presenceAvant)
+			{
+				targetDis = targetDis-(mDroit.getPosition()-startPositionRight);
+				stateNav = SET_DISTANCE ;
+			}
+			else if (targetDis < 0 && !presenceArriere)
+			{
+				targetDis = targetDis+(startPositionRight-mDroit.getPosition());
+				stateNav = SET_DISTANCE ;
+			}
 			break;
 		case END_OF_MATCH 	:
 			// Fin du match
@@ -135,6 +157,27 @@ void strategieNavigation()
 void getBorderState()
 {
 	for(int i = 0;i<4;i++) borderState[i] = digitalRead(pinBorderSensor[i]);
+}
+
+void getOpponentState()
+{
+	// Adversaire Avant
+	if (digitalReadFast(pinAdversaireAvant))
+	{
+		if (!presenceAvant) presenceAvant = true ;
+		//Demarre ou reset le comptage de temps
+		avantTimeInit = millis();
+	}
+	else if((millis()-avantTimeInit)>=sensorTime) presenceAvant = false;
+
+	// Adversaire Arriere
+	if (digitalReadFast(pinAdversaireArriere))
+	{
+		if (!presenceAvant) presenceArriere = true ;
+		//Demarre ou reset le comptage de temps
+		arriereTimeInit = millis();
+	}
+	else if((millis()-arriereTimeInit)>=sensorTime) presenceArriere = false;
 }
 
 void changeTypeRobot(bool type)
@@ -167,7 +210,7 @@ void receiveEvent(int howMany)
 
 		// On calcul le CRC
 		crcNavRelatif = CRC8.smbus(bufNavRelatif, sizeof(bufNavRelatif)-1); //On enleve le CRC
-		Serial.println(crcNavRelatif);
+		//Serial.println(crcNavRelatif);
 		// On regarde si le CRC calculé correspond à celui envoyé
 		if (crcNavRelatif==bufNavRelatif[sizeof(bufNavRelatif)-1])
 		{

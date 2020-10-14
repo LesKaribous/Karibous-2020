@@ -115,10 +115,22 @@ bool optionAdversaire = false;
 bool optionRecalage   = false;
 bool optionRalentit   = false;
 
+bool presenceAvant    = false;
+bool presenceArriere  = false;
+
+unsigned long avantTimeInit   = 0;
+unsigned long arriereTimeInit = 0;
+unsigned long sensorTime      = 1000;
+
+long startPositionLeft  = 0;
+long startPositionRight = 0;
+
+
 // --------------------------------------------------
 
 void changeTypeRobot(bool type);
 void getBorderState();
+void getOpponentState();
 void strategieNavigation();
 //----- Communications -----
 void receiveEvent(int howMany);
