@@ -105,8 +105,9 @@ byte bufNavAbsolu[8]={0,0,0,0,0,0,0,0}; // Buffer de reception absolu + le CRC
 byte crcNavAbsolu = 0;                  // CRC absolu
 
 int16_t relativeRequest[2] ;  // rotation, distance
-int16_t absoluteRequest[3] ;  // rotation, X, Y
-int16_t currentPos[3];        //rotation, X, Y
+int16_t absoluteRequest[3] ;  // X, Y, Alpha
+
+long currentPos[3];        // X, Y, Alpha
 
 int targetDis = 0 ;
 int targetRot = 0 ;
@@ -124,6 +125,7 @@ unsigned long sensorTime      = 1000;
 
 long startPositionLeft  = 0;
 long startPositionRight = 0;
+
 
 
 // --------------------------------------------------

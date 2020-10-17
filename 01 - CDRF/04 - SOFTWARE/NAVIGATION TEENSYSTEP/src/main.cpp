@@ -39,8 +39,6 @@ void setup()
   mDroit
     .setMaxSpeed(VitesseMaxDroite)      // steps/s
     .setAcceleration(AccelMaxDroite); 	// steps/s^2
-
-
 }
 
 void loop()
@@ -72,8 +70,15 @@ void strategieNavigation()
 			// Attend la fin de la rotation
 			if (!robot.isRunning())
 			{
-				targetDis = relativeRequest[1]*FacteurX;
-				stateNav = SET_DISTANCE ;
+				if(relativeRequest[1] != 0)
+				{
+					targetDis = relativeRequest[1]*FacteurX;
+					stateNav = SET_DISTANCE ;
+				}
+				else
+				{
+					stateNav = NAVIGATION_AVAILABLE ;
+				}
 			}
 			break;
 		case SET_DISTANCE  	:
@@ -254,16 +259,16 @@ void receiveEvent(int howMany)
 		{
 			// CRC ok
 			// On traite les données
-			absoluteRequest[0]= bufNavAbsolu[1] << 8 | bufNavAbsolu[2];
-			absoluteRequest[1]= bufNavAbsolu[3] << 8 | bufNavAbsolu[4];
-			absoluteRequest[2]= bufNavAbsolu[5] << 8 | bufNavAbsolu[6];
+			absoluteRequest[0]= bufNavAbsolu[1] << 8 | bufNavAbsolu[2]; // NewX
+			absoluteRequest[1]= bufNavAbsolu[3] << 8 | bufNavAbsolu[4]; // NewY
+			absoluteRequest[2]= bufNavAbsolu[5] << 8 | bufNavAbsolu[6]; // NewAlpha
 
 			if (bufNavAbsolu[0] == END_OF_MATCH) stateNav = END_OF_MATCH ;
 			else
 			{
 				optionAdversaire 	= 	bitRead(bufNavAbsolu[0], 0);
 				optionRecalage 		= 	bitRead(bufNavAbsolu[0], 1);
-				optionRalentit 		= 	bitRead(bufNavAbsolu[0],2);
+				optionRalentit 		= 	bitRead(bufNavAbsolu[0], 2);
 				// On indique qu'une nouvelle position est disponible
 				stateCom = NEW_ABS_TARGET;
 			}
