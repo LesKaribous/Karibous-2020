@@ -53,110 +53,148 @@ void strategieNavigation()
 	switch (stateNav)
 	{
 		case NAVIGATION_AVAILABLE :
-			// Navigation Disponible
-			digitalWrite(pinSleep, LOW);
-			if (stateCom == NEW_REL_TARGET) stateNav = SET_ROTATION ;
+				navigationAvailable();
 			break;
 		case SET_ROTATION  	:
-			// Lance la rotation du robot
-			digitalWrite(pinSleep, HIGH);
-			targetRot = relativeRequest[0]*FacteurRot;
-			mGauche.setTargetRel(-targetRot);
-    	mDroit.setTargetRel(-targetRot);
-			robot.moveAsync(mGauche,mDroit);
-			stateNav = WAIT_ROTATION ;
+				setRotation();
 			break;
 		case WAIT_ROTATION 	:
-			// Attend la fin de la rotation
-			if (!robot.isRunning())
-			{
-				if(relativeRequest[1] != 0)
-				{
-					targetDis = relativeRequest[1]*FacteurX;
-					stateNav = SET_DISTANCE ;
-				}
-				else
-				{
-					stateNav = NAVIGATION_AVAILABLE ;
-				}
-			}
+				waitDistance();
 			break;
 		case SET_DISTANCE  	:
-			// Lance le déplacement en distance du robot
-			digitalWrite(pinSleep, HIGH);
-			mGauche.setTargetRel(-targetDis);
-			mDroit.setTargetRel(targetDis);
-			//Enregistre la position de départ
-			startPositionLeft		=	mGauche.getPosition();
-			startPositionRight	= mDroit.getPosition();
-
-			robot.moveAsync(mGauche,mDroit);
-			stateCom = WAITING_TARGET;
-			stateNav = WAIT_DISTANCE;
+				setDistance();
 			break;
 		case WAIT_DISTANCE 	:
-			// Attend la fin du déplacement en distance
-			// Si recalage demandé et marche arriere
-			if (optionRecalage && targetDis < 0)
-			{
-				if (borderState[2]) pinMode(pinStepDroit,INPUT);
-				else if (borderState[3]) pinMode(pinStepGauche,INPUT);
-			}
-			// Si check adversaire demandé
-			if (optionAdversaire)
-			{
-				if 			(targetDis > 0 && presenceAvant) 		stateNav = STOP_OPPONENT ;
-				else if (targetDis < 0 && presenceArriere) 	stateNav = STOP_OPPONENT ;
-			}
-
-			if (!robot.isRunning())
-			{
-				stateNav = NAVIGATION_AVAILABLE ;
-				pinMode(pinStepDroit,OUTPUT);
-				pinMode(pinStepGauche,OUTPUT);
-			}
+				waitDistance();
 			break;
 		case STOP_OPPONENT 	:
-			// Arrêt du robot en cas d'adversaire
-			// Enregistre la position actuelle (getPosition)
-			// Enregistre la psoition désirée de fin
-			Serial.print("stop à :");
-			Serial.println(mDroit.getPosition());
-			Serial.print("Distance demandée :");
-			Serial.println(targetDis);
-			Serial.print("Start position :");
-			Serial.println(startPositionRight);
-			// Met la position du stepper à la position actuelle + decelleration (setPosition)
-			// va a la position actuelle - decelleration
-			robot.stopAsync();
-			// Va à WAIT_OPPONENT
-			stateNav = WAIT_OPPONENT ;
+				stopOpponent();
 			break;
 		case WAIT_OPPONENT 	:
-			// Attendre la fin de la deceleration (vitesse à zero)
-			Serial.print("|");
-			if (targetDis > 0 && !presenceAvant)
-			{
-				targetDis = targetDis-(mDroit.getPosition()-startPositionRight);
-				stateNav = SET_DISTANCE ;
-			}
-			else if (targetDis < 0 && !presenceArriere)
-			{
-				targetDis = targetDis+(startPositionRight-mDroit.getPosition());
-				stateNav = SET_DISTANCE ;
-			}
+			 	waitOpponent();
 			break;
 		case END_OF_MATCH 	:
-			// Fin du match
-			digitalWrite(pinSleep, HIGH);
-			robot.stopAsync();
-			stateNav = WAIT_END_OF_MATCH ;
+				endOfMatch();
 			break;
 	  case WAIT_END_OF_MATCH 	:
-			// Attendre la fin de l'arrêt de fin de match
-			if (!robot.isRunning()) stateNav = NAVIGATION_AVAILABLE ;
+				waitEndOfMatch();
 			break;
 	}
+}
+
+void navigationAvailable()
+{
+	// Navigation Disponible
+	digitalWrite(pinSleep, LOW);
+	if (stateCom == NEW_REL_TARGET) stateNav = SET_ROTATION ;
+}
+void setRotation()
+{
+	// Lance la rotation du robot
+	digitalWrite(pinSleep, HIGH);
+	targetRot = relativeRequest[0]*FacteurRot;
+	mGauche.setTargetRel(-targetRot);
+	mDroit.setTargetRel(-targetRot);
+	robot.moveAsync(mGauche,mDroit);
+	stateNav = WAIT_ROTATION ;
+}
+
+void waitRotation()
+{
+	// Attend la fin de la rotation
+	if (!robot.isRunning())
+	{
+		if(relativeRequest[1] != 0)
+		{
+			targetDis = relativeRequest[1]*FacteurX;
+			stateNav = SET_DISTANCE ;
+		}
+		else
+		{
+			stateNav = NAVIGATION_AVAILABLE ;
+		}
+	}
+}
+void setDistance()
+{
+	// Lance le déplacement en distance du robot
+	digitalWrite(pinSleep, HIGH);
+	mGauche.setTargetRel(-targetDis);
+	mDroit.setTargetRel(targetDis);
+	//Enregistre la position de départ
+	startPositionLeft		=	mGauche.getPosition();
+	startPositionRight	= mDroit.getPosition();
+
+	robot.moveAsync(mGauche,mDroit);
+	stateCom = WAITING_TARGET;
+	stateNav = WAIT_DISTANCE;
+}
+void waitDistance()
+{
+	// Attend la fin du déplacement en distance
+	// Si recalage demandé et marche arriere
+	if (optionRecalage && targetDis < 0)
+	{
+		if (borderState[2]) pinMode(pinStepDroit,INPUT);
+		else if (borderState[3]) pinMode(pinStepGauche,INPUT);
+	}
+	// Si check adversaire demandé
+	if (optionAdversaire)
+	{
+		if 			(targetDis > 0 && presenceAvant) 		stateNav = STOP_OPPONENT ;
+		else if (targetDis < 0 && presenceArriere) 	stateNav = STOP_OPPONENT ;
+	}
+
+	if (!robot.isRunning())
+	{
+		stateNav = NAVIGATION_AVAILABLE ;
+		pinMode(pinStepDroit,OUTPUT);
+		pinMode(pinStepGauche,OUTPUT);
+	}
+}
+void stopOpponent()
+{
+	// Arrêt du robot en cas d'adversaire
+	// Enregistre la position actuelle (getPosition)
+	// Enregistre la psoition désirée de fin
+	Serial.print("stop à :");
+	Serial.println(mDroit.getPosition());
+	Serial.print("Distance demandée :");
+	Serial.println(targetDis);
+	Serial.print("Start position :");
+	Serial.println(startPositionRight);
+	// Met la position du stepper à la position actuelle + decelleration (setPosition)
+	// va a la position actuelle - decelleration
+	robot.stopAsync();
+	// Va à WAIT_OPPONENT
+	stateNav = WAIT_OPPONENT ;
+}
+void waitOpponent()
+{
+	// Attendre la fin de la deceleration (vitesse à zero)
+	Serial.print("|");
+	if (targetDis > 0 && !presenceAvant)
+	{
+		targetDis = targetDis-(mDroit.getPosition()-startPositionRight);
+		stateNav = SET_DISTANCE ;
+	}
+	else if (targetDis < 0 && !presenceArriere)
+	{
+		targetDis = targetDis+(startPositionRight-mDroit.getPosition());
+		stateNav = SET_DISTANCE ;
+	}
+}
+void endOfMatch()
+{
+	// Fin du match
+	digitalWrite(pinSleep, HIGH);
+	robot.stopAsync();
+	stateNav = WAIT_END_OF_MATCH ;
+}
+void waitEndOfMatch()
+{
+	// Attendre la fin de l'arrêt de fin de match
+	if (!robot.isRunning()) stateNav = NAVIGATION_AVAILABLE ;
 }
 
 void getBorderState()

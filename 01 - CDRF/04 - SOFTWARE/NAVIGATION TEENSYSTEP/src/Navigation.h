@@ -126,14 +126,25 @@ unsigned long sensorTime      = 1000;
 long startPositionLeft  = 0;
 long startPositionRight = 0;
 
-
-
 // --------------------------------------------------
 
 void changeTypeRobot(bool type);
 void getBorderState();
 void getOpponentState();
+
+// ------- MACHINE D'ETAT -------
 void strategieNavigation();
+
+void navigationAvailable();
+void setRotation();
+void waitRotation();
+void setDistance();
+void waitDistance();
+void stopOpponent();
+void waitOpponent();
+void endOfMatch();
+void waitEndOfMatch();
+
 //----- Communications -----
 void receiveEvent(int howMany);
 void requestEvent();
