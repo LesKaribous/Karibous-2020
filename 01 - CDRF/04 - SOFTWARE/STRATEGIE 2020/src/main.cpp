@@ -185,12 +185,15 @@ void initActionneur(){
 void homologationPrimaire()
 {
   //TO DO
+  attente(100000);
   finMatch();
 }
 
 void homologationSecondaire()
 {
   //TO DO
+  score = 999;
+  attente(100000);
   finMatch();
 }
 
@@ -198,12 +201,14 @@ void sequenceRecalage(){
   //Recalage
   if (typeRobot == ROBOT_PRIMAIRE)
   {
-    turnGo(false,true,false,0,-100);
+    turnGo(false,false,false,20,100);
     attente(1000);
     //TO DO
   }
   else
   {
+    turnGo(false,false,false,20,100);
+    attente(1000);
     //TO DO
   }
 }
