@@ -17,7 +17,7 @@ void setup()
   digitalWrite(pinM1, LOW);
   digitalWrite(pinM2, HIGH);
   // Pause des drivers avant le premier mouvement
-  digitalWrite(pinSleep, LOW);
+  digitalWrite(pinSleep, HIGH);
 	// Init du type de robot
 	changeTypeRobot(digitalRead(pinRobot));
 	// Init des pins capteurs bordure
@@ -52,45 +52,19 @@ void strategieNavigation()
 {
 	switch (stateNav)
 	{
-		case NAVIGATION_AVAILABLE :
-				navigationAvailable();
-			break;
-	  case CONVERT_REL_TARGET :
-					convertRelTarget();
-			break;
-		case CONVERT_ABS_TARGET :
-				convertAbsTarget();
-			break;
-		case SET_ROTATION  	:
-				setRotation();
-			break;
-		case WAIT_ROTATION 	:
-				waitDistance();
-			break;
-		case SET_DISTANCE  	:
-				setDistance();
-			break;
-		case WAIT_DISTANCE 	:
-				waitDistance();
-			break;
-		case STOP_OPPONENT 	:
-				stopOpponent();
-			break;
-		case WAIT_OPPONENT 	:
-			 	waitOpponent();
-			break;
-		case SET_ALPHA 	:
-				setAlpha();
-		  break;
-	  case WAIT_ALPHA :
-				waitAlpha();
-			break;
-		case END_OF_MATCH 	:
-				endOfMatch();
-			break;
-	  case WAIT_END_OF_MATCH 	:
-				waitEndOfMatch();
-			break;
+		case NAVIGATION_AVAILABLE:	navigationAvailable();	break;
+	  case CONVERT_REL_TARGET:		convertRelTarget(); 		break;
+		case CONVERT_ABS_TARGET: 		convertAbsTarget(); 		break;
+		case SET_ROTATION: 					setRotation();					break;
+		case WAIT_ROTATION: 				waitRotation();					break;
+		case SET_DISTANCE:					setDistance();					break;
+		case WAIT_DISTANCE:					waitDistance();					break;
+		case STOP_OPPONENT:					stopOpponent();					break;
+		case WAIT_OPPONENT:					waitOpponent();					break;
+		case SET_ALPHA:							setAlpha();							break;
+	  case WAIT_ALPHA:						waitAlpha();						break;
+		case END_OF_MATCH:					endOfMatch();						break;
+	  case WAIT_END_OF_MATCH:			waitEndOfMatch();				break;
 	}
 }
 
@@ -105,6 +79,8 @@ void convertRelTarget()
 {
 	targetRot = relativeRequest[0]*FacteurRot;
 	targetDis = relativeRequest[1]*FacteurX;
+
+	stateNav = SET_ROTATION ;
 }
 void convertAbsTarget()
 {
@@ -137,10 +113,7 @@ void setRotation()
 void waitRotation()
 {
 	// Attend la fin de la rotation
-	if (!robot.isRunning())
-	{
-		stateNav = SET_DISTANCE ;
-	}
+	if (!robot.isRunning()) stateNav = SET_DISTANCE ;
 }
 void setDistance()
 {
@@ -153,7 +126,7 @@ void setDistance()
 	startPositionRight	= mDroit.getPosition();
 
 	robot.moveAsync(mGauche,mDroit);
-	stateCom = WAITING_TARGET;
+	//stateCom = WAITING_TARGET;
 	stateNav = WAIT_DISTANCE;
 }
 void waitDistance()
@@ -177,6 +150,7 @@ void waitDistance()
 		if(stateCom == NEW_REL_TARGET)
 		{
 			stateNav = NAVIGATION_AVAILABLE ;
+			stateCom = WAITING_TARGET ;
 			pinMode(pinStepDroit,OUTPUT);
 			pinMode(pinStepGauche,OUTPUT);
 		}
@@ -323,6 +297,7 @@ void receiveEvent(int howMany)
 				// On indique qu'une nouvelle position est disponible
 				stateCom = NEW_REL_TARGET;
 			}
+
 		}
 		else
 		{
