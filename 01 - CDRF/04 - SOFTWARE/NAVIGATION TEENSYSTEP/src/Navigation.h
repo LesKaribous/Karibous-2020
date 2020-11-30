@@ -51,7 +51,7 @@ const int pinDirDroit = 3;
 
 const int pinSleep = 4;
 
-const int pinM0 = 7;
+const int pinM0 = A12;
 const int pinM1 = 0;
 const int pinM2 = 1;
 
