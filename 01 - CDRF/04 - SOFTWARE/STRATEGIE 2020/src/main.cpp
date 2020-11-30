@@ -65,6 +65,7 @@ void waitLaunch(){
     {
       interface.initScreen();
       sequenceRecalage();
+      interface.setRecalage(true);
       //interface.checkListScreen();
     }
     interface.menuScreen();
@@ -76,6 +77,7 @@ void waitLaunch(){
     {
       interface.initScreen();
       sequenceRecalage();
+      interface.setRecalage(true);
       //interface.checkListScreen();
     }
     interface.menuScreen();
