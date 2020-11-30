@@ -57,7 +57,7 @@ void ComNavigation::sendNavigation(byte fonction, int X, int Y, int rot)
 
 	// Calcul du CRC
 	_crcNavRelatif = _CRC8.smbus(_bufNavAbsolu, sizeof(_bufNavAbsolu));
-	//Serial.println(crcNavRelatif);
+	//Serial.println(_crcNavRelatif);
 
 	// Envoi des données
 	Wire.beginTransmission(_CARTE_DEPLACEMENT);
@@ -81,7 +81,7 @@ void ComNavigation::sendNavigation(byte fonction, int rot, int dist)
 	_bufNavRelatif[4]=dist & 255;
 	// Calcul du CRC
 	_crcNavRelatif = _CRC8.smbus(_bufNavRelatif, sizeof(_bufNavRelatif));
-	//Serial.println(crcNavRelatif);
+	//Serial.println(_crcNavRelatif);
 	// Envoi des données
 	Wire.beginTransmission(_CARTE_DEPLACEMENT);
 	for(int i=0;i<=4;i++)
