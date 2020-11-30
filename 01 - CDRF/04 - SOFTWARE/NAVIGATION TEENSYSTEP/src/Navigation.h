@@ -16,12 +16,16 @@
 // Etats de la navigation
 typedef enum {
   NAVIGATION_AVAILABLE,
+  CONVERT_REL_TARGET,
+  CONVERT_ABS_TARGET,
   SET_ROTATION,
   WAIT_ROTATION,
   SET_DISTANCE,
   WAIT_DISTANCE,
   STOP_OPPONENT,
   WAIT_OPPONENT,
+  SET_ALPHA,
+  WAIT_ALPHA,
   END_OF_MATCH = 255,
   WAIT_END_OF_MATCH
 } Navigation ;
@@ -107,10 +111,11 @@ byte crcNavAbsolu = 0;                  // CRC absolu
 int16_t relativeRequest[2] ;  // rotation, distance
 int16_t absoluteRequest[3] ;  // X, Y, Alpha
 
-long currentPos[3];        // X, Y, Alpha
+long currentPos[3]={0.0,0.0,0.0};        // X, Y, Alpha
 
-int targetDis = 0 ;
-int targetRot = 0 ;
+double targetDis    = 0.0 ;
+double targetRot    = 0.0 ;
+double targetAlpha  = 0.0;
 
 bool optionAdversaire = false;
 bool optionRecalage   = false;
@@ -136,12 +141,16 @@ void getOpponentState();
 void strategieNavigation();
 
 void navigationAvailable();
+void convertRelTarget();
+void convertAbsTarget();
 void setRotation();
 void waitRotation();
 void setDistance();
 void waitDistance();
 void stopOpponent();
 void waitOpponent();
+void setAlpha();
+void waitAlpha();
 void endOfMatch();
 void waitEndOfMatch();
 
