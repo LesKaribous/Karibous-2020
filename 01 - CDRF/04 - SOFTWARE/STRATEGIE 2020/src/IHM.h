@@ -71,7 +71,6 @@ class IHM
       void setRecalage      (bool state);
       bool getRecalage      ();
       //------ Pages LCD ------
-      void prepare          ();
       void splashScreen     ();
       void menuScreen       ();
       void initScreen       ();

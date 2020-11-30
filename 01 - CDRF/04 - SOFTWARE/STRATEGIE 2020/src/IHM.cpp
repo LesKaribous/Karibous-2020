@@ -16,7 +16,11 @@ IHM::IHM(){
   digitalWrite(_latchMux, HIGH);
   digitalWrite(_clockMux, LOW);
 
-    _u8g2.begin();           //Init du LCD
+  _u8g2.begin();           //Init du LCD
+  _u8g2.setFontRefHeightExtendedText();
+  _u8g2.setDrawColor(1);
+  _u8g2.setFontPosTop();
+  _u8g2.setFontDirection(0);
 }
 
 IHM::~IHM(){}
@@ -76,13 +80,6 @@ bool IHM::getRecalage(){
 }
 
 //----------------GESTION DES PAGES LCD-------------------
-void IHM::prepare() {
-  _u8g2.setFont(u8g2_font_4x6_tf);
-  _u8g2.setFontRefHeightExtendedText();
-  _u8g2.setDrawColor(1);
-  _u8g2.setFontPosTop();
-  _u8g2.setFontDirection(0);
-}
 void IHM::splashScreen() {
   _u8g2.clearBuffer();
   // Affichage de l'image K
@@ -92,26 +89,23 @@ void IHM::splashScreen() {
 
   // Affichages de la date de compilation
   _u8g2.setFont(u8g2_font_micro_mr);
-  _u8g2.drawStr( 5, 118, __DATE__);
-  _u8g2.drawStr( 5, 128, __TIME__);
+  _u8g2.drawStr( 5, 110, __DATE__);
+  _u8g2.drawStr( 5, 118, __TIME__);
 
   _u8g2.sendBuffer();
 }
 void IHM::menuScreen() {
   const int ligneEtat = 0;
   const int ligneStrategie = 64;
-  const int colonne0 = 0;
   const int colonne1 = 2;
-  const int colonne2 = 35;
 
   _u8g2.clearBuffer();
-  prepare();
 
   // Affichages des titres :
   _u8g2.setFont(u8g2_font_5x7_mr);
 
   _u8g2.drawStr( colonne1, ligneEtat,    " -- ETAT --");
-  _u8g2.drawStr( colonne1, ligneStrategie,   " -- STRAT --");
+  _u8g2.drawStr( colonne1+3, ligneStrategie,   "-- STRAT --");
 
   // Affichages des sous-titres :
   _u8g2.setFont(u8g2_font_micro_mr);
@@ -127,8 +121,16 @@ void IHM::menuScreen() {
   _u8g2.setCursor(colonne1,ligneEtat+10);
   if ( _typeRobot == _ROBOT_PRIMAIRE ) _u8g2.print("1st");
   else _u8g2.print("2nd");
+  // Etat equipe :
+  _u8g2.setCursor(colonne1+28,ligneStrategie+10);
+  if ( _equipe == _EQUIPE_JAUNE ) _u8g2.print("jaune");
+  else _u8g2.print("bleu");
+  // Etat strategie :
+  _u8g2.setCursor(colonne1,ligneStrategie+20);
+  if ( _strategie ) _u8g2.print("Homologation");
+  else _u8g2.print("Match");
 
-  // Symbols :
+  // Symboles :
   _u8g2.setFont(u8g2_font_m2icon_9_tf);
   // Etat tirette :
   if ( _tirette ) _u8g2.drawGlyph(colonne1,ligneEtat+20-1,0x0045);
@@ -139,28 +141,18 @@ void IHM::menuScreen() {
   // Etat recalage :
   if ( !_recalage ) _u8g2.drawGlyph(colonne1,ligneEtat+40-1,0x0045);
   else _u8g2.drawGlyph(colonne1,ligneEtat+40-1,0x0046);
-
-
-
-  // Etat equipe :
-  /*
-  _u8g2.setCursor(colonne2,ligneDebut);
-  if ( _equipe == _EQUIPE_JAUNE ) _u8g2.print("jaune");
-  else _u8g2.print("bleu");
-
-  // Etat strategie :
-  _u8g2.setCursor(colonne2,ligneDebut+40);
-  if ( _strategie ) _u8g2.print("homologation");
-  else _u8g2.print("match");
-  */
+  // Validation de départ :
+  _u8g2.setFont(u8g2_font_open_iconic_check_2x_t);
+  if (!_tirette && _detection && _recalage) _u8g2.drawGlyph(44,10,0x41);
+  else _u8g2.drawGlyph(44,10,0x42);
 
 
   _u8g2.sendBuffer();
 }
 void IHM::initScreen(){
   _u8g2.clearBuffer();
-  _u8g2.setFont(u8g2_font_logisoso58_tr);
-  _u8g2.drawStr( 10, 2, "Init");
+  _u8g2.setFont(u8g2_font_logisoso32_tr);
+  _u8g2.drawStr( 3, 2, "Init");
   _u8g2.sendBuffer();
   delay(1500);
 }
@@ -197,24 +189,45 @@ void IHM::checkListScreen(){
 }
 void IHM::goScreen() {
   _u8g2.clearBuffer();
-  _u8g2.setFont(u8g2_font_logisoso58_tr);
-  _u8g2.drawStr( 18, 2, "GO!");
+  _u8g2.setFont(u8g2_font_logisoso32_tr);
+  _u8g2.drawStr( 5, 48, "GO!");
   _u8g2.sendBuffer();
 }
 void IHM::matchScreen(int score,int tempsRestant,int nbrBadCRC) {
 	_u8g2.clearBuffer();
-	prepare();
-  _u8g2.setFont(u8g2_font_inr42_mn);
-  _u8g2.setCursor(8, 9);
+  // Titre
+  _u8g2.setFont(u8g2_font_logisoso16_tr);
+  _u8g2.drawStr( 8, 1, "Match");
+  _u8g2.drawHLine(0,20,64);
+
+  // Affichage partie Score
+  _u8g2.setFont(u8g2_font_micro_mr);
+  _u8g2.drawStr(  4, 23, "Score:");
+  _u8g2.drawStr( 38, 66, "points");
+
+  // Score Chiffre
+  _u8g2.setFont(u8g2_font_logisoso32_tr);
+  _u8g2.setCursor(2, 31);
   _u8g2.print(score);
-  _u8g2.setFont(u8g2_font_4x6_tf);
-  _u8g2.drawStr( 0, 0, "Score:");
-  _u8g2.drawStr( 68, 0, "Temps:      sec");
-  _u8g2.setCursor(93, 0);
+
+  _u8g2.drawHLine(0,75,64);
+
+
+  // Partie inférieure
+  _u8g2.setFont(u8g2_font_micro_mr);
+  _u8g2.drawStr( 3, 77, "Temps:      sec");
+  _u8g2.drawStr( 3, 87, "    X:         ");
+  _u8g2.drawStr( 3, 97, "    Y:         ");
+  _u8g2.drawStr( 3, 107,"alpha:      deg");
+
+  _u8g2.setCursor(36, 77);
   _u8g2.print(tempsRestant);
-  _u8g2.drawStr( 105, 57, "points");
-  _u8g2.drawStr( 0, 57, "NOK:");
-  _u8g2.setCursor(20, 57);
+
+  // Erreurs
+  _u8g2.drawHLine(0,119,64);
+  _u8g2.drawStr( 0, 120, "erreurs :");
+  _u8g2.setCursor(40, 120);
   _u8g2.print(nbrBadCRC);
-	_u8g2.sendBuffer();
+
+  _u8g2.sendBuffer();
 }
