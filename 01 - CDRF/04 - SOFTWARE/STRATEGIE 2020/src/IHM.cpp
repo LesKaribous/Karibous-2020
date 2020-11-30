@@ -1,45 +1,63 @@
 # include "IHM.h"
 
 // Declaration de l'ecran
-U8G2_ST7920_128X64_F_SW_SPI _u8g2(U8G2_R0,13,11,12,U8X8_PIN_NONE);
+U8G2_ST7920_128X64_F_SW_SPI _u8g2(U8G2_R3,13,11,12,U8X8_PIN_NONE);
 
 IHM::IHM(){
-  pinMode(_pinDetection,INPUT_PULLUP);
-  pinMode(_pinStrategie,INPUT_PULLUP);
-  pinMode(_pinTypeRobot,INPUT_PULLUP);
+  //pinMode(_pinDetection,INPUT_PULLUP);
+  //pinMode(_pinStrategie,INPUT_PULLUP);
+  //pinMode(_pinTypeRobot,INPUT_PULLUP);
   pinMode(_pinTirette,INPUT_PULLUP);
-  _u8g2.begin();           //Init du LCD
+
+  pinMode(_latchMux, OUTPUT);
+  pinMode(_clockMux, OUTPUT);
+  pinMode(_clockInhMux, OUTPUT);
+  pinMode(_dataMux, INPUT);
+  digitalWrite(_latchMux, HIGH);
+  digitalWrite(_clockMux, LOW);
+
+    _u8g2.begin();           //Init du LCD
 }
 
 IHM::~IHM(){}
 
 //----------------GESTION DES BOUTTONS DE L'IHM----------------
 void IHM::updateButtonIHM(){
+  readButtonState();
   getDetection();
   getStrategie();
   getCheck();
   getTypeRobot();
   getEquipe();
 }
+
+void IHM::readButtonState(){
+  digitalWrite(_latchMux, LOW);
+  digitalWrite(_latchMux, HIGH);
+  for (int i=0; i <= 7; i++)
+  {
+    // on note l'état de la sortie (pin 9) du HC165
+    _buttonState[7-i] = digitalRead(_dataMux);
+    // et on envoi un front montant sur la pin 2 pour décaler les valeurs
+    digitalWrite(_clockMux, HIGH);
+    digitalWrite(_clockMux, LOW);
+  }
+}
 bool IHM::getTirette(){
-  _tirette = digitalRead(_pinTirette) ;
+  if(analogRead(_pinTirette)<10) _tirette = false ;
+  else _tirette = true ;
   return _tirette ;
 }
 bool IHM::getDetection(){
-  _detection  = digitalRead(_pinDetection) ;
+  _detection  = _buttonState[7] ;
   return _detection ;
 }
 bool IHM::getStrategie(){
-  _strategie  = digitalRead(_pinStrategie) ;
+  _strategie  = _buttonState[6] ;
   return _strategie ;
 }
 bool IHM::getCheck(){
-  if(analogRead(_pinCheck)>10)
-  {
-    delay(250);
-    if(analogRead(_pinCheck)>10) _check = true ;
-  }
-  else _check = false ;
+  _check = _buttonState[5];
   return _check ;
 }
 bool IHM::getTypeRobot(){
@@ -47,9 +65,14 @@ bool IHM::getTypeRobot(){
   return _typeRobot ;
 }
 bool IHM::getEquipe(){
-  if(analogRead(_pinEquipe)>10) _equipe = false ;
-  else _equipe = true ;
+  _equipe = _buttonState[4];
   return _equipe ;
+}
+void IHM::setRecalage(bool state){
+  _recalage = state;
+}
+bool IHM::getRecalage(){
+  return _recalage ;
 }
 
 //----------------GESTION DES PAGES LCD-------------------
@@ -62,47 +85,75 @@ void IHM::prepare() {
 }
 void IHM::splashScreen() {
   _u8g2.clearBuffer();
-  _u8g2.drawXBMP( 0, 15, _LOGO_KARIBOUS_width, _LOGO_KARIBOUS_height, _LOGO_KARIBOUS_bits);
+  // Affichage de l'image K
+  _u8g2.setDrawColor(1);
+  _u8g2.setBitmapMode(0);
+  _u8g2.drawXBMP( 0, 32, _LOGO_KARIBOUS_width, _LOGO_KARIBOUS_height, _LOGO_KARIBOUS_bits);
+
+  // Affichages de la date de compilation
+  _u8g2.setFont(u8g2_font_micro_mr);
+  _u8g2.drawStr( 5, 118, __DATE__);
+  _u8g2.drawStr( 5, 128, __TIME__);
+
   _u8g2.sendBuffer();
 }
 void IHM::menuScreen() {
-  const int ligneDebut = 10;
-  const int colonne1 = 14;
-  const int colonne2 = 70;
+  const int ligneEtat = 0;
+  const int ligneStrategie = 64;
+  const int colonne0 = 0;
+  const int colonne1 = 2;
+  const int colonne2 = 35;
 
   _u8g2.clearBuffer();
   prepare();
 
-  _u8g2.setFont(u8g2_font_4x6_tf);
   // Affichages des titres :
-  _u8g2.drawStr( colonne1, ligneDebut,    "      EQUIPE");
-  _u8g2.drawStr( colonne1, ligneDebut+10, "   EVITEMENT");
-  _u8g2.drawStr( colonne1, ligneDebut+20, "       ROBOT");
-  _u8g2.drawStr( colonne1, ligneDebut+30, "ETAT TIRETTE");
-  _u8g2.drawStr( colonne1, ligneDebut+40, "   STRATEGIE");
-  // Ligne de séparation
-  _u8g2.drawBox(colonne2-4,ligneDebut,1,ligneDebut+37);
+  _u8g2.setFont(u8g2_font_5x7_mr);
+
+  _u8g2.drawStr( colonne1, ligneEtat,    " -- ETAT --");
+  _u8g2.drawStr( colonne1, ligneStrategie,   " -- STRAT --");
+
+  // Affichages des sous-titres :
+  _u8g2.setFont(u8g2_font_micro_mr);
+
+  _u8g2.drawStr( colonne1 + 15, ligneEtat+10, "robot ");
+  _u8g2.drawStr( colonne1 + 10, ligneEtat+20, "Tirette");
+  _u8g2.drawStr( colonne1 + 10, ligneEtat+30, "Balise");
+  _u8g2.drawStr( colonne1 + 10, ligneEtat+40, "Recalage");
+
+  _u8g2.drawStr( colonne1, ligneStrategie+10, "Equipe");
+
+  // Etat type de robot :
+  _u8g2.setCursor(colonne1,ligneEtat+10);
+  if ( _typeRobot == _ROBOT_PRIMAIRE ) _u8g2.print("1st");
+  else _u8g2.print("2nd");
+
+  // Symbols :
+  _u8g2.setFont(u8g2_font_m2icon_9_tf);
+  // Etat tirette :
+  if ( _tirette ) _u8g2.drawGlyph(colonne1,ligneEtat+20-1,0x0045);
+  else _u8g2.drawGlyph(colonne1,ligneEtat+20-1,0x0046);
+  // Etat balise :
+  if ( !_detection ) _u8g2.drawGlyph(colonne1,ligneEtat+30-1,0x0045);
+  else _u8g2.drawGlyph(colonne1,ligneEtat+30-1,0x0046);
+  // Etat recalage :
+  if ( !_recalage ) _u8g2.drawGlyph(colonne1,ligneEtat+40-1,0x0045);
+  else _u8g2.drawGlyph(colonne1,ligneEtat+40-1,0x0046);
+
+
 
   // Etat equipe :
+  /*
   _u8g2.setCursor(colonne2,ligneDebut);
-  if ( _equipe == _EQUIPE_JAUNE ) _u8g2.print("JAUNE");
-  else _u8g2.print("VIOLET");
-  // Etat detection:
-  _u8g2.setCursor(colonne2,ligneDebut+10);
-  if ( _detection ) _u8g2.print("COMPLET");
-  else _u8g2.print("SIMPLE");
-  // Etat type de robot :
-  _u8g2.setCursor(colonne2,ligneDebut+20);
-  if ( _typeRobot == _ROBOT_PRIMAIRE ) _u8g2.print("PRIMAIRE");
-  else _u8g2.print("SECONDAIRE");
-  // Etat tirette :
-  _u8g2.setCursor(colonne2,ligneDebut+30);
-  if ( _tirette ) _u8g2.print("ATTENTE");
-  else _u8g2.print("OK");
+  if ( _equipe == _EQUIPE_JAUNE ) _u8g2.print("jaune");
+  else _u8g2.print("bleu");
+
   // Etat strategie :
   _u8g2.setCursor(colonne2,ligneDebut+40);
-  if ( _strategie ) _u8g2.print("HOMOLOGATION");
-  else _u8g2.print("MATCH");
+  if ( _strategie ) _u8g2.print("homologation");
+  else _u8g2.print("match");
+  */
+
 
   _u8g2.sendBuffer();
 }
