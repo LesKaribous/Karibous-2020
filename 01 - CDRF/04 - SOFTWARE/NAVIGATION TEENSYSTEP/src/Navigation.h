@@ -105,8 +105,9 @@ byte bufNavAbsolu[8]={0,0,0,0,0,0,0,0}; // Buffer de reception absolu + le CRC
 byte crcNavAbsolu = 0;                  // CRC absolu
 
 int16_t relativeRequest[2] ;  // rotation, distance
-int16_t absoluteRequest[3] ;  // rotation, X, Y
-int16_t currentPos[3];        //rotation, X, Y
+int16_t absoluteRequest[3] ;  // X, Y, Alpha
+
+long currentPos[3];        // X, Y, Alpha
 
 int targetDis = 0 ;
 int targetRot = 0 ;
@@ -125,13 +126,25 @@ unsigned long sensorTime      = 1000;
 long startPositionLeft  = 0;
 long startPositionRight = 0;
 
-
 // --------------------------------------------------
 
 void changeTypeRobot(bool type);
 void getBorderState();
 void getOpponentState();
+
+// ------- MACHINE D'ETAT -------
 void strategieNavigation();
+
+void navigationAvailable();
+void setRotation();
+void waitRotation();
+void setDistance();
+void waitDistance();
+void stopOpponent();
+void waitOpponent();
+void endOfMatch();
+void waitEndOfMatch();
+
 //----- Communications -----
 void receiveEvent(int howMany);
 void requestEvent();
