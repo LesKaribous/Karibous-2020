@@ -48,12 +48,12 @@ void ComNavigation::sendNavigation(byte fonction, int X, int Y, int rot)
 {
 	// Stockage des valeurs à envoyer dans le buffer
   _bufNavAbsolu[0]=fonction;
-	_bufNavAbsolu[1]=rot >> 8;
-	_bufNavAbsolu[2]=rot & 255;
-	_bufNavAbsolu[3]=X >> 8;
-	_bufNavAbsolu[4]=X & 255;
-	_bufNavAbsolu[5]=Y >> 8;
-	_bufNavAbsolu[6]=Y & 255;
+	_bufNavAbsolu[1]=X >> 8;
+	_bufNavAbsolu[2]=X & 255;
+	_bufNavAbsolu[3]=Y >> 8;
+	_bufNavAbsolu[4]=Y & 255;
+  _bufNavAbsolu[5]=rot >> 8;
+  _bufNavAbsolu[6]=rot & 255;
 
 	// Calcul du CRC
 	_crcNavRelatif = _CRC8.smbus(_bufNavAbsolu, sizeof(_bufNavAbsolu));
@@ -107,6 +107,26 @@ void ComNavigation::turnGo(bool detection, bool recalibration,bool speed,int tur
 	bitWrite(optionNavigation,1,recalibration);
 	bitWrite(optionNavigation,2,speed);
 	sendNavigation(optionNavigation, turn, go);
+
+  setDetection(detection);
+  setRecalibration(recalibration);
+  setSpeed(speed);
+}
+
+//----------------ENVOI UNE COMMANDE GO TO-----------------
+void ComNavigation::goTo(int X, int Y, int rot)
+{
+  goTo(_detectionState,_recalibrationState,_speedState,X, Y, rot);
+}
+void ComNavigation::goTo(bool detection, bool recalibration,bool speed, int X, int Y, int rot)
+{
+  bool optionDetection = _globalDetection || detection;
+  byte optionNavigation = 0;
+
+	bitWrite(optionNavigation,0,optionDetection);
+	bitWrite(optionNavigation,1,recalibration);
+	bitWrite(optionNavigation,2,speed);
+	sendNavigation(optionNavigation, X, Y, rot);
 
   setDetection(detection);
   setRecalibration(recalibration);

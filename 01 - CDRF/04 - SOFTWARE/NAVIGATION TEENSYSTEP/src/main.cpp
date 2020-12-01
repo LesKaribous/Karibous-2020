@@ -45,6 +45,7 @@ void loop()
 {
 	getBorderState();
 	getOpponentState();
+	updateAbsPosition();
 	strategieNavigation();
 }
 
@@ -77,8 +78,8 @@ void navigationAvailable()
 }
 void convertRelTarget()
 {
-	targetRot = relativeRequest[0]*FacteurRot;
-	targetDis = relativeRequest[1]*FacteurX;
+	targetRot = relativeRequest[0]*facteurRot;
+	targetDis = relativeRequest[1]*facteurX;
 
 	stateNav = SET_ROTATION ;
 }
@@ -90,13 +91,13 @@ void convertAbsTarget()
 	targetRot = atan2(deltaY,deltaX);
 	targetRot *= (180.0/PI);
 	targetRot = currentPos[2]-targetRot;
-	targetRot *= FacteurRot;
+	targetRot *= facteurRot;
 
 	targetDis = sqrt((deltaY*deltaY)+(deltaX*deltaX));
-	targetDis *= FacteurX;
+	targetDis *= facteurX;
 
 	targetAlpha = absoluteRequest[2]-targetRot;
-	targetAlpha *= FacteurRot;
+	targetAlpha *= facteurRot;
 
 	stateNav = SET_ROTATION ;
 }
@@ -109,7 +110,6 @@ void setRotation()
 	robot.moveAsync(mGauche,mDroit);
 	stateNav = WAIT_ROTATION ;
 }
-
 void waitRotation()
 {
 	// Attend la fin de la rotation
@@ -223,6 +223,46 @@ void waitEndOfMatch()
 	if (!robot.isRunning()) stateNav = NAVIGATION_AVAILABLE ;
 }
 
+void updateAbsPosition()
+{
+  long currentPositionLeft = mGauche.getPosition();
+	long currentPositionRight = mDroit.getPosition();
+	long dLeft = -(lastPositionLeft - currentPositionLeft);
+	long dRight = lastPositionRight - currentPositionRight;
+
+	float dAlpha = (dRight-dLeft)/2;   //variation de l'angle
+	float dDelta = (dRight+dLeft)/2;   //variation de l'avancement
+
+	//conversion en radian
+	currentPos[2] += dAlpha / facteurRot;
+
+	//calcul des décalages selon X et Y
+	float dX = cos(currentPos[2]) * dDelta;
+	float dY = sin(currentPos[2]) * dDelta;
+
+	//conversion de la position en mètre
+	currentPos[0] += (dX / facteurX);
+	currentPos[1] += (dY / facteurX);
+
+	//Enregistre la position pour l'update suivante :
+	lastPositionLeft = currentPositionLeft;
+	lastPositionRight = currentPositionRight;
+
+	if(dLeft != 0 || dRight != 0)
+	{
+		Serial.print(dLeft);
+		Serial.print(" | ");
+		Serial.println(dRight);
+
+		Serial.print(currentPos[0]);
+		Serial.print(" | ");
+		Serial.print(currentPos[1]);
+		Serial.print(" | ");
+		Serial.println(currentPos[2]);
+	}
+
+}
+
 void getBorderState()
 {
 	for(int i = 0;i<4;i++) borderState[i] = digitalRead(pinBorderSensor[i]);
@@ -253,15 +293,15 @@ void changeTypeRobot(bool type)
 {
 	if(type == ROBOT_PRIMAIRE)
 	{
-		FacteurX			= primaireFacteurX ;
-		FacteurDroit 	= primaireFacteurDroit ;
-		FacteurGauche = primaireFacteurGauche ;
-		FacteurRot 		= primaireFacteurRot ;
+		facteurX			= primaireFacteurX ;
+		facteurDroit 	= primaireFacteurDroit ;
+		facteurGauche = primaireFacteurGauche ;
+		facteurRot 		= primaireFacteurRot ;
 	} else {
-		FacteurX			= secondaireFacteurX ;
-		FacteurDroit 	= secondaireFacteurDroit ;
-		FacteurGauche = secondaireFacteurGauche ;
-		FacteurRot 		= secondaireFacteurRot ;
+		facteurX			= secondaireFacteurX ;
+		facteurDroit 	= secondaireFacteurDroit ;
+		facteurGauche = secondaireFacteurGauche ;
+		facteurRot 		= secondaireFacteurRot ;
 	}
 }
 

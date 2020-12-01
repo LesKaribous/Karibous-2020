@@ -61,10 +61,10 @@ Stepper mDroit(pinStepDroit, pinDirDroit);   //STEP pin =  5, DIR pin = 6
 StepControl robot;
 
 // Variable par defaut pour le réglage des déplacements
-float FacteurX      = 1.0;
-float FacteurDroit  = 1.0;
-float FacteurGauche = 1.0;
-float FacteurRot    = 1.0;
+float facteurX      = 1.0;
+float facteurDroit  = 1.0;
+float facteurGauche = 1.0;
+float facteurRot    = 1.0;
 
 uint32_t VitesseMaxDroite = 20000;
 uint32_t VitesseMaxGauche = 20000;
@@ -111,7 +111,7 @@ byte crcNavAbsolu = 0;                  // CRC absolu
 int16_t relativeRequest[2] ;  // rotation, distance
 int16_t absoluteRequest[3] ;  // X, Y, Alpha
 
-long currentPos[3]={0.0,0.0,0.0};        // X, Y, Alpha
+float currentPos[3]={0,0,0};        // X, Y, Alpha
 
 double targetDis    = 0.0 ;
 double targetRot    = 0.0 ;
@@ -131,11 +131,17 @@ unsigned long sensorTime      = 1000;
 long startPositionLeft  = 0;
 long startPositionRight = 0;
 
+//--- Get position ---
+long lastPositionLeft = 0;
+long lastPositionRight = 0;
+
 // --------------------------------------------------
 
 void changeTypeRobot(bool type);
 void getBorderState();
 void getOpponentState();
+
+void updateAbsPosition();
 
 // ------- MACHINE D'ETAT -------
 void strategieNavigation();

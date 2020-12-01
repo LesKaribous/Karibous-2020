@@ -208,6 +208,7 @@ void sequenceRecalage(){
   else
   {
     turnGo(false,false,false,20,100);
+    turnGo(false,false,false,-20,100);
     attente(1000);
     //TO DO
   }
@@ -229,6 +230,16 @@ void matchPrimaire(){
 
 void matchSecondaire()
 {
+  nav.setDetection(true);
+  nav.setRecalibration(false);
+  nav.setSpeed(false);
+
+  turnGo(0,100);
+  turnGo(45,0);
+  turnGo(-45,0);
+  turnGo(0,-100);
+  turnGo(0,100);
+
   finMatch();
 }
 
@@ -283,6 +294,37 @@ void turnGo(bool adversaire, bool recalage,bool ralentit,int turn, int go)
     attente(100);
     reponseNavigation = nav.askNavigation();
 	}
+}
+
+void goTo  (int X, int Y, int rot)
+{
+  nav.goTo(X,Y,rot);
+  int reponseNavigation = nav.askNavigation();
+	while(reponseNavigation!=TERMINEE)
+	{
+    if (reponseNavigation==ERRONEE)
+    {
+      nav.goTo(X,Y,rot);
+      navError++;
+    }
+    attente(100);
+    reponseNavigation = nav.askNavigation();
+	}
+}
+void turnGo(bool adversaire, bool recalage,bool ralentit,int X, int Y, int rot)
+{
+  nav.goTo(adversaire,recalage,ralentit,X,Y,rot);
+  int reponseNavigation = nav.askNavigation();
+  while(reponseNavigation!=TERMINEE)
+  {
+    if (reponseNavigation==ERRONEE)
+    {
+      nav.goTo(adversaire,recalage,ralentit,X,Y,rot);
+      navError++;
+    }
+    attente(100);
+    reponseNavigation = nav.askNavigation();
+  }
 }
 
 //----------------MISE A JOUR DU TEMPS DE MATCH----------------

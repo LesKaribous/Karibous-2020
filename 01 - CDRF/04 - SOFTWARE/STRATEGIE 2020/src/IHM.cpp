@@ -92,6 +92,8 @@ void IHM::splashScreen() {
   _u8g2.drawStr( 5, 110, __DATE__);
   _u8g2.drawStr( 5, 118, __TIME__);
 
+
+
   _u8g2.sendBuffer();
 }
 void IHM::menuScreen() {
